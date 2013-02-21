@@ -276,15 +276,36 @@ class TennisOptions extends Options {
 	}
 	
 	function createScreenshot(id: int){
-		//var item = scenarioModal.getItemById(id);
-		//scenarioModal.saveItem(item);
 		
-		var panel: iGUIElement = panel.rootPanel;
-		var panelId: int = mainPresenter.getPanelIdFromPanel(panel);
-		Debug.Log('panelId = '+panelId);
+		var rootPanel: iGUIElement = panel.rootPanel;
+		var panelId: int = mainPresenter.getPanelIdFromPanel(rootPanel);
 		mainPresenter.disablePanel(panelId);
 		scenarioModal.createScreenshot(id);
-		//mainPresenter.enablePanel(panelId);
+		
+		/*
+		 * Screenshot is rendered at end of frame. Can't hide, then 
+		 * show GUI. Add a 'finished' button instead to show GUI.
+		 */
+		// Add 'finished' button
+		var r: iGUIRoot = mainPresenter.panel.getContainer("root");
+		var button: iGUIButton = addPageButton(panelId.ToString(), 'X', 'instructionsButton', r);
+		button.setX(0.39);
+		button.setY(0);
+		button.setWidth(0.11);
+		button.clickCallback = finishedScreenshot_Click;
+		
+		panel.addButton('finishedScreenshot', button);
+	}
+	
+	function finishedScreenshot_Click(caller : iGUIButton){
+		mainPresenter.enablePanel(int.Parse(caller.userData));
+		
+		// remove 'finished button;
+		var buttonId = 'finishedScreenshot';
+		var button: iGUIButton = panel.getButton(buttonId);
+		var r: iGUIRoot = mainPresenter.panel.getContainer("root");
+		r.removeElement(button);
+		panel.removeButton(buttonId);
 	}
 		
 	function updateElementSwitches(){

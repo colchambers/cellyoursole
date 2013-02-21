@@ -123,5 +123,5 @@ class TennisScenarioModal extends Modal{
 		Debug.Log('p = '+p);
 		
 		Application.CaptureScreenshot(p);
-	}	
+	}
 }

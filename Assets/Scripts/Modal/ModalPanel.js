@@ -69,6 +69,10 @@ class ModalPanel {
 		buttons.Add(fn, f);
 	}
 	
+	function removeButton(fn:String){
+		buttons.Remove(fn);
+	}
+	
 	function getContainer(fn:String){
 		if(!containers.ContainsKey(fn)){
 			return null;
