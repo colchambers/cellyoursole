@@ -3,7 +3,7 @@
 [Oo]bj/
 
 [Pp]rojectSettings/
-Assets/
+Assets/*
 !Assets/Pages/
 !Assets/Scripts/
 
