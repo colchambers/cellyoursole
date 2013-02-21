@@ -1,0 +1,371 @@
+#pragma strict
+import System.Collections.Generic;
+
+var draggables: GameObject[];
+var draggableText: TextMesh;
+var currentDraggable: GameObject;
+var currentDragIndex: int = -1;
+var currentDraggableOriginalLayer: int;
+var currentDraggableOriginalScale: Vector3;
+var textures: Texture[];
+
+@HideInInspector
+var dist:float;
+@HideInInspector	
+var orbitSpeedX:float;
+@HideInInspector
+var orbitSpeedY:float;
+@HideInInspector
+var zoomSpeed:float;
+
+var rotXSpeedModifier:float =0.25;
+var rotYSpeedModifier:float=0.25;
+var zoomSpeedModifier:float=5;
+
+var minRotX:float=-20;
+var maxRotX:float=190;
+
+var panSpeedModifier:float=1;
+
+var currentCamera: Camera;
+var isCameraDrag:boolean=false;
+var presenter: MainPresenter;
+	
+// Use this for initialization
+function Start () {
+	dist=currentCamera.transform.localPosition.z;
+	//var iGUIRoot: iGUICode_tenniscourt = GetComponent(iGUICode_tenniscourt);
+	//presenter = iGUIRoot.presenter;
+	
+	// If scene has draggables configured use them.
+	// Get current scene
+	var mvp: MVP = presenter.getMVP('options');
+	var sceneDraggables = mvp.getDraggables();
+	if(sceneDraggables.Length){
+		draggables = sceneDraggables;
+	}
+}
+
+function OnEnable(){
+
+	Gesture.onMultiTapE += OnMultiTap;
+	Gesture.onLongTapE += OnLongTap;
+	Gesture.onDraggingStartE += OnDraggingStart;
+	Gesture.onDraggingE += OnDragging;
+	Gesture.onDraggingEndE += OnDraggingEnd;
+	
+	Gesture.onMFDraggingE += OnMFDragging;
+		
+	Gesture.onPinchE += OnPinch;
+	
+	
+	/*
+	// Assign text to draggables
+	for(draggable in draggables){
+		if(draggable.name == "ball"){
+			continue;
+		}
+		// Append text prefab
+		var dragVector: Vector3 = new Vector3(draggable.transform.position.x,
+										draggable.transform.position.y,
+										draggable.transform.position.z);
+		
+		var dragText : TextMesh = Instantiate(draggableText, dragVector, Quaternion.identity);
+		
+    	dragText.text = draggable.name;
+    	dragText.name = "haloText";
+    	dragText.transform.parent = draggable.transform;
+
+		var localScale : float = 0.6;
+		dragText.transform.localScale = new Vector3(localScale,localScale,localScale);
+    	dragText.transform.localPosition.y = 1.5;
+    	//dragText.transform.LookAt(currentCamera.transform);
+    	dragText.transform.rotation.y = 180;
+	}
+	*/
+	
+}
+
+function OnDisable(){
+
+	Gesture.onMultiTapE -= OnMultiTap;
+	Gesture.onLongTapE -= OnLongTap;
+	Gesture.onDraggingStartE -= OnDraggingStart;
+	Gesture.onDraggingE -= OnDragging;
+	Gesture.onDraggingEndE -= OnDraggingEnd;
+	
+	Gesture.onMFDraggingE -= OnMFDragging;
+		
+	Gesture.onPinchE -= OnPinch;
+}
+
+
+function OnDraggingStart(dragInfo: DragInfo){
+	
+	// Ignore if drag is over gui
+	if(isOverGUI(dragInfo.pos)){
+		return;
+	}
+
+	var ray:Ray = Camera.main.ScreenPointToRay(dragInfo.pos);
+	var hit:RaycastHit;
+	//use raycast at the cursor position to detect the object
+	if(getMode() == MVP.MODE_EDIT && Physics.Raycast(ray, hit, 100)){
+		for(draggable in draggables){
+			if(hit.collider.transform!=draggable.transform){
+				continue;
+			}
+			setCurrentDraggable(draggable);
+			currentDragIndex = dragInfo.index;
+			DragObject(hit);
+			
+			return;
+		}
+		
+		isCameraDrag = true;
+	}
+	else {
+		isCameraDrag = true;
+	}
+	
+}
+
+// Update is called once per frame
+function Update () {
+	
+	//get the current rotation
+	var x=currentCamera.transform.rotation.eulerAngles.x;
+	var y=currentCamera.transform.rotation.eulerAngles.y;
+	
+	//make sure x is between -180 to 180 so we can clamp it properly later
+	if(x>180){
+		x-=360;
+	}
+	
+	//calculate the x and y rotation
+	var rotationY = Quaternion.Euler(0, y, 0)*Quaternion.Euler(0, orbitSpeedY, 0);
+	var rotationX = Quaternion.Euler(Mathf.Clamp(x+orbitSpeedX, minRotX, maxRotX), 0, 0);
+
+		//apply the rotation
+	currentCamera.transform.parent.rotation=rotationY*rotationX;
+	
+	//calculate the zoom and apply it
+	dist+=Time.deltaTime*zoomSpeed*0.01f;
+	dist=Mathf.Clamp(dist, -150, 0);
+	currentCamera.transform.localPosition=new Vector3(
+				currentCamera.transform.localPosition.x, 
+				currentCamera.transform.localPosition.y, 
+				dist);
+	
+	//reduce all the speed
+	orbitSpeedX*=(1-Time.deltaTime*12);
+	orbitSpeedY*=(1-Time.deltaTime*3);
+	zoomSpeed*=(1-Time.deltaTime*4);
+	
+	//use mouse scroll wheel to simulate pinch, sorry I sort of cheated here
+	zoomSpeed+=Input.GetAxis("Mouse ScrollWheel")*500*zoomSpeedModifier;
+}
+
+
+//triggered on a single-finger/mouse dragging event is on-going
+function OnDragging(dragInfo: DragInfo){
+
+		// Ignore if tap is over gui
+	if(isOverGUI(dragInfo.pos)){
+		return;
+	}
+
+	if(!isCameraDrag){
+		// Create a sphere at the point being aimed at. 
+		var ray:Ray = Camera.main.ScreenPointToRay(dragInfo.pos);
+		var hit:RaycastHit;
+		if(Physics.Raycast(ray.origin, ray.direction, hit, 100)){
+			DragObject(hit);
+		} 
+	}
+	else {
+	// Drag Camera
+	//if the drag is perform using mouse2, use it as a two finger drag
+		if(dragInfo.isMouse && dragInfo.index==1) {
+			OnMFDragging(dragInfo);
+		}
+		//else perform normal orbiting
+		else {
+			//vertical movement is corresponded to rotation in x-axis
+			orbitSpeedX=-dragInfo.delta.y*rotXSpeedModifier;
+			//horizontal movement is corresponded to rotation in y-axis
+			orbitSpeedY=dragInfo.delta.x*rotYSpeedModifier;
+		}
+		
+	}
+}
+
+function DragObject(hit:RaycastHit){
+	if(currentDraggable){
+		currentDraggable.transform.position.x = hit.point.x;
+		currentDraggable.transform.position.z = hit.point.z;
+		/*
+		var r: Renderer;
+		if(currentDraggable.renderer){
+			//currentDraggable.transform.position.y += currentDraggable.renderer.bounds.size.y;
+			r = currentDraggable.renderer;
+		}
+		else {
+			r = currentDraggable.GetComponentInChildren(Renderer);
+		}
+		
+		currentDraggable.transform.position.y += r.bounds.size.y;*/
+	}
+}
+
+	
+function OnDraggingEnd(dragInfo: DragInfo){
+
+	//drop the current object being dragged by this particular cursor
+	if(dragInfo.index==currentDragIndex){
+		
+		resetCurrentDraggable();
+	}
+	
+	isCameraDrag = false;
+
+}
+//called when pinch is detected
+function OnPinch(val:float){
+	zoomSpeed-=val*zoomSpeedModifier;
+}
+
+//called when a dual finger or a right mouse drag is detected
+function OnMFDragging(dragInfo:DragInfo){
+
+	// Ignore if tap is over gui
+	if(isOverGUI(dragInfo.pos)){
+		return;
+	}
+	
+	//make a new direction, pointing horizontally at the direction of the camera y-rotation
+	var direction = Quaternion.Euler(0, currentCamera.transform.parent.rotation.eulerAngles.y, 0);
+	
+	//calculate forward movement based on vertical input
+	var moveDirZ = currentCamera.transform.parent.InverseTransformDirection(direction*Vector3.forward*-dragInfo.delta.y);
+	//calculate sideway movement base on horizontal input
+	var moveDirX = currentCamera.transform.parent.InverseTransformDirection(direction*Vector3.right*-dragInfo.delta.x);
+	
+	//move the camera 
+	currentCamera.transform.parent.Translate(moveDirZ * panSpeedModifier * Time.deltaTime);
+	currentCamera.transform.parent.Translate(moveDirX * panSpeedModifier * Time.deltaTime);
+	
+}
+
+//called when a multi-Tap event is detected
+function OnMultiTap(tap: Tap){
+
+	// Ignore if tap is over gui
+	if(isOverGUI(tap.pos)){
+		return;
+	}
+	
+	//do a raycast base on the position of the tap
+	var ray = Camera.main.ScreenPointToRay(tap.pos);
+	var hit: RaycastHit;
+	if(Physics.Raycast(ray, hit, Mathf.Infinity)){
+	
+		if(tap.count==2){ // Double tap
+			for(draggable in draggables){
+				
+				if(hit.collider.gameObject.name!=draggable.name){
+					continue;
+				}
+				
+				// Item selected. Display item menu
+				presenter.displayItemMenu(draggable.name);
+				return;
+			}
+		}
+	}
+
+}
+
+/**
+ * reset currentdraggable object to original values
+ */
+function resetCurrentDraggable(){
+
+	// reset original
+	if(!currentDraggable){
+		return;
+	}
+	currentDraggable.transform.localScale = currentDraggableOriginalScale;
+	//drop the current object being dragged by this particular cursor
+	//if(dragInfo.index==currentDragIndex){
+		currentDragIndex=-1;
+		currentDraggable.layer = currentDraggableOriginalLayer;
+		//unsetCurrentDraggable();
+		currentDraggable = null;
+	//}
+	
+	isCameraDrag = false;
+	
+}
+
+function setCurrentDraggable(draggable: GameObject){
+
+	// reset original
+	resetCurrentDraggable();
+	
+	// Set new
+	currentDraggable = draggable;
+	currentDraggableOriginalScale = currentDraggable.transform.localScale;
+	currentDraggable.transform.localScale*=1.1;
+	currentDraggable.layer = LayerMask.NameToLayer("Ignore Raycast");
+	currentDraggableOriginalLayer = currentDraggable.layer;
+	
+}
+
+function unsetCurrentDraggable(){
+	currentDraggable.transform.localScale*=1/1.1;
+}
+	
+//called when a long tap event is ended
+function OnLongTap(tap: Tap){
+
+	// Ignore if tap is over gui
+	if(isOverGUI(tap.pos)){
+		return;
+	}
+
+}
+
+/**
+ * Check if a gesture occurs over an enabled gui element
+ * @param Vector2 pos position of gesture
+ * @return bool
+ */
+function isOverGUI(pos: Vector2){
+	var mvp = presenter.getCurrentMVP();
+	var menu: iGUIWindow = mvp.panel.getContainer('menu');
+	var ar: Rect = menu.getAbsoluteRect(); // rect values of gui window
+
+	if(menu.enabled && pos[0]>ar.left && pos[0]<(ar.left+ar.width)
+		&& pos[1]>ar.top && pos[1]<(ar.top+ar.height)){
+		return true; // Do nothing
+	}
+	
+	return false;
+}
+
+/**
+ * Get the editing mode of the current MVP
+ * @return string mode
+ */
+function getMode(){
+	var mvp = presenter.getCurrentMVP();
+	return mvp.getMode();
+}
+	
+function DebugDragInfo(dragInfo: DragInfo, s: String){
+	Debug.Log(s+" Draginfo");
+	Debug.Log("pos = "+dragInfo.pos);
+	Debug.Log("delta = "+dragInfo.delta);
+}
+

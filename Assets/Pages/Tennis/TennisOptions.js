@@ -1,0 +1,553 @@
+#pragma strict
+
+class TennisOptions extends Options {
+
+	var elementAllEnabled: boolean = true;
+	var elementSwitches: Dictionary.<String, iGUISwitch>;
+	
+	var playerData: String;
+	var scenarioModal: TennisScenarioModal;
+	var e: Errors;
+
+	static var ELEMENTS_SWITCH_ALL_ID = 'all';
+
+	function TennisOptions(m: Modal, v: View, p: Presenter){
+		super(m,v,p);
+	}
+	function TennisOptions(){
+		super();
+		hasBackground = true;
+	}
+	
+	function init(){
+		super();
+		e = new Errors();
+		
+		initialiseSceneItems();
+		initialiseScenarioItems();
+		initialiseModes();
+		
+		// Load Default Scenario
+		loadScenario(1);
+	}
+	
+	function initialiseSceneItems(){
+		// Add all scene items to be used in the page. 
+		var objects = getPlayers();
+		for(var o in objects){
+			addSceneItem(o.name, o);
+		}
+		
+		objects = getBalls();
+		for(var o in objects){
+			addSceneItem(o.name, o);
+		}
+	}
+	
+	function initialiseScenarioItems(){
+		scenarioModal = new TennisScenarioModal();
+		mainPresenter.addModal('tennisScenarios', scenarioModal);
+		
+	}
+	
+	function initialiseModes(){
+	
+		// Add mode button
+		var r: iGUIRoot = mainPresenter.panel.getContainer("root");
+		var button: iGUIButton = addPageButton(MVP.MODE_EDIT, 'E', 'instructionsButton', r);
+		button.setX(0.26);
+		button.setY(0);
+		button.setWidth(0.11);
+		button.clickCallback = toggleMode_Click;
+	}
+	
+	function getPlayers () {
+		return GameObject.FindGameObjectsWithTag('Player');
+	}
+	
+	function getBalls () {
+		return GameObject.FindGameObjectsWithTag('ball');
+	}
+	
+	function display() {
+		populateMenu();
+	}
+	
+	/**
+	 * Populate the settings menu 
+	 * @return void
+	 */
+	function populateMenu(){
+
+		var menu: iGUIWindow = panel.getContainer('menu');
+		menu.label.text = "Options";
+		menu.setWidth(0.5);
+		menu.setHeight(1);
+		menu.setX(1.0);
+		menu.setY(1.0);
+		
+		reset();
+	
+		// Create buttons.
+		var button: iGUIButton;
+		
+		button = addPageButton('1', 'Back to scene');
+		button.clickCallback = backToScene_Click;
+		
+		button = addPageButton('menu', 'Main Menu');
+		
+		button = addPageButton('1', 'Position Zones');
+		button.clickCallback = positionZones_Click;
+		
+		addPageNavigationButton('views', 'Views');
+		addPageNavigationButton('elements', 'Elements');
+		addPageNavigationButton('scenarios', 'Scenarios');
+		
+		// Disable bakground scene
+		setBackgroundEnabled(true);
+		
+	}
+	
+	function loadPage(id: String){
+		Debug.Log(id);
+		switch (id) {
+			case 'optionsMenu':
+				populateMenu();
+				break;
+			case 'views':
+				populateViews();
+				break;
+			case 'elements':
+				populateElements();
+				break;
+			case 'scenarios':
+				populateScenarios();
+				break;
+			case 'updateScenario':
+				var item = scenarioModal.getCurrentItem();
+				updateScenario(item.id);
+				break;
+		}
+		super(id);
+	}
+
+	/**
+	 * Populate the settings menu 
+	 * @return void
+	 */
+	function populateViews(){
+	
+		setBackgroundEnabled(true);
+		prepareSubPage();
+		
+		var text="";
+		
+		text ="You can view this scene from many viewpoints.";
+		text+="Select different view points from the list below.\n";
+			
+		addPageText(text, 0.5);
+		
+		addPageViewButton('Main Camera', 'Default');
+		
+		addPageViewButton('Player 1 Camera', 'Player 1');
+		addPageViewButton('Player 2 Camera', 'Player 2');
+		addPageViewButton('Player 3 Camera', 'Player 3');
+		addPageViewButton('Player 4 Camera', 'Player 4');
+		addPageViewButton('Ball Camera', 'Ball');
+		
+		addPageViewButton('Walking Camera', 'First Person');
+		addPageViewButton('Walking Camera 2', 'First Person 2');
+		addPageViewButton('Top Camera', 'Top');
+		
+	}
+	
+	/**
+	 * Populate the element menu 
+	 * @return void
+	 */
+	function populateElements(){
+	
+		prepareSubPage();
+		setBackgroundEnabled(true);
+		
+		var text="";
+		
+		text ="Using this resource you can organise a tennis court and explore how your ";
+		text+="changes affect its accessibility. \n";
+		text+="You can move most elements by dragging them.\n";
+		text+="To drag an item select it with your finger or mouse and drag it.\n";
+			
+		addPageText(text, 0.5);
+		
+		var elements: Dictionary.<String, String> = new Dictionary.<String, String>();
+		
+		// All
+		elements.Add(ELEMENTS_SWITCH_ALL_ID, 'All');
+		
+		// Dynamic Objects
+		elements.Add('Player 1', 'Player 1');
+		elements.Add('Player 2', 'Player 2');
+		elements.Add('Player 3', 'Player 3');
+		elements.Add('Player 4', 'Player 4');
+		elements.Add('ball', 'Ball');
+
+		
+		elementSwitches = new Dictionary.<String, iGUISwitch>();
+		for (var o in elements) {
+			elementSwitches.Add( o.Key,
+			addPageSwitch(o.Key, o.Value, handleElementSwitch_change));
+		}
+
+		updateElementSwitches();	
+	}
+
+	/**
+	 * Populate the settings menu 
+	 * @return void
+	 */
+	function populateScenarios(){
+	
+		setBackgroundEnabled(true);
+		prepareSubPage();
+		
+		var text="";
+		var item: TennisScenarioItem;
+		
+		text ="Load any scenario below into this scene";
+		addPageText(text, 0.5);
+		
+		var button : iGUIButton;
+		button = addPageButton('0', 'New Scenario');
+		button.clickCallback = updateScenario_Click;
+		
+		button = addPageButton('0', 'New Screenshot');
+		button.clickCallback = createScreenshot_Click;
+		
+		var row: iGUIListBox;
+		var color: Color;
+		var currentItem = scenarioModal.getCurrentItem();
+		// Loop through and display scenarios
+		for(item in scenarioModal.items.Values){
+			color = currentItem.id == item.id?Color.red:Color.white;
+	    	row = addPageListBox(list);
+	    	row.setWidth(1);
+	    	row.setHeight(0.17);
+	    	row.direction = iGUIListDirection.LeftToRight;
+	    	
+	    	button = addPageButton(item.id.ToString(), item.getField('name'), 'instructionsButton', row);
+	    	button.clickCallback = loadScenario_Click;
+	    	button.setWidth(0.7);
+	    	button.labelColor = color;
+	    	
+	    	button = addPageButton(item.id.ToString(), 'U', 'instructionsButton', row);
+	    	button.setWidth(0.1);
+	    	button.clickCallback = updateScenario_Click;
+	    	button.labelColor = color;
+	    	
+	    	button = addPageButton(item.id.ToString(), 'X', 'instructionsButton', row);
+	    	button.setWidth(0.1);
+	    	button.labelColor = color;
+	    	button.clickCallback = deleteScenario_Click;
+		}
+	}
+	
+	function updateScenario(id: int){
+		setBackgroundEnabled(false);
+		prepareSubPage('scenarios');
+		
+		var item = getScenario(id);
+		var textField: iGUITextfield;
+		textField = addPageTextField('Name', item.getField('name'), 0.12, list);
+		panel.addField('name', textField);
+		var button : iGUIButton;
+		button = addPageButton(item.id.ToString(), 'Save');
+    	button.clickCallback = saveScenario_Click;
+    	button.setWidth(0.7);
+	}
+	
+	function saveScenario(id: int){
+		var item = scenarioModal.getItemById(id);
+		scenarioModal.saveItem(item);
+	}
+	
+	function deleteScenario(id: int){
+		scenarioModal.deleteItem(id);
+		loadPage('scenarios');
+	}
+	
+	function createScreenshot(id: int){
+		//var item = scenarioModal.getItemById(id);
+		//scenarioModal.saveItem(item);
+		
+		var panel: iGUIElement = panel.rootPanel;
+		var panelId: int = mainPresenter.getPanelIdFromPanel(panel);
+		Debug.Log('panelId = '+panelId);
+		mainPresenter.disablePanel(panelId);
+		scenarioModal.createScreenshot(id);
+		//mainPresenter.enablePanel(panelId);
+	}
+		
+	function updateElementSwitches(){
+		// All switch
+		var s: iGUISwitch = elementSwitches[ELEMENTS_SWITCH_ALL_ID];
+			s.setValue(elementAllEnabled);
+		var items = getSceneItems();	
+		for (var item in items.Values) {
+			var o = item.item;
+			s = elementSwitches[o.name];
+			s.setValue(o.active);
+		}	
+	}
+	
+	function addPageViewButton (id: String, t: String) {
+		var b: iGUIButton = addPageButton (id, t, 'instructionsButton');
+		b.clickCallback = setView_click;
+		return b;
+	}
+	
+	function backToScene_Click(caller : iGUIButton){
+		mainPresenter.disablePanel(11);
+		setBackgroundEnabled(true);
+	}
+	
+	function positionZones_Click(caller : iGUIButton){
+		var positionZone = GameObject.Find('Position Zone');
+		Debug.Log(positionZone);
+		positionZone.GetComponent(MeshCollider).enabled = true;
+		positionZone.GetComponent(MeshRenderer).enabled = true;
+		
+	}
+	
+	function setView_click (caller: iGUIButton) {
+		var c: Camera = GameObject.Find(caller.userData).GetComponent(Camera);;
+		var si :SceneInteraction = getScript('sceneInteraction');
+		si.currentCamera.enabled = false;
+		si.currentCamera = c;
+		si.dist = c.transform.localPosition.z;
+		si.currentCamera.enabled = true;
+	}
+	
+	function handleElementSwitch_change (caller: iGUISwitch) {
+		if(caller.userData == 'all'){
+			elementAllEnabled = !elementAllEnabled;
+			var items = getSceneItems();	
+			for (var item in items.Values) {
+				var o = item.item;
+				toggleObjectActive(o.name);
+			}
+			updateElementSwitches();
+			return;
+		}
+		
+		toggleObjectActive(caller.userData);
+	}
+	
+	function toggleObjectActive(id){
+		var items = getSceneItems();	
+		for (var item in items.Values) {
+			var o = item.item;
+			if(o.name != id){
+				continue;
+			}
+			o.SetActiveRecursively(!o.active);
+			return;
+		}
+	}
+	
+	/*
+	 * Scenarios
+	 */
+	function addPageScenarioLoadButton (id: String, t: String) {
+		var b: iGUIButton = addPageButton (id, t, 'instructionsButton');
+		b.clickCallback = loadScenario_Click;
+		return b;
+	}
+	
+	function loadScenario_Click(caller : iGUIButton){
+		loadScenario(int.Parse(caller.userData));
+		loadPage('scenarios');
+	}
+	
+	function loadScenario(id:int){
+		var item = getScenario(id);
+		scenarioModal.setCurrentItem(item);
+		JSONLevelSerializer.LoadNow(item.getField('data'));
+	}
+	
+	function loadScenario_Complete(){
+		Debug.Log('Load scenario complete.');
+	}
+	
+	function updateScenario_Click(caller : iGUIButton){
+		updateScenario(int.Parse(caller.userData));
+	}
+	
+	function createScreenshot_Click(caller : iGUIButton){
+		createScreenshot(int.Parse(caller.userData));
+	}
+	
+	function deleteScenario_Click(caller : iGUIButton){
+		deleteScenario(int.Parse(caller.userData));
+	}
+		
+	function saveScenario_Click(caller : iGUIButton){
+		var id: int = int.Parse(caller.userData);
+		validateScenario(id);
+		if(e.hasErrors()){
+			displayErrors();
+			return;
+		}
+		e.clearErrors();
+		var item:TennisScenarioItem = getScenario(id);
+		var f: String = 'name';
+		var name: iGUITextfield = panel.getField(f);
+		item.setField(f, name.value);
+		
+		// If it's the loaded scenario save layout data
+		Debug.Log('id = '+id);
+		
+		var currentItem = scenarioModal.getCurrentItem();
+		Debug.Log('currentItem = '+currentItem);
+		if(!item.getField('data') || id == currentItem.id){
+			item.setField('data', JSONLevelSerializer.SerializeLevel());
+		}
+		saveScenario(id);
+		
+		loadPage('scenarios');
+	}
+		
+	function getScenario(id:int){
+		return scenarioModal.getItemById(id);
+	}
+	
+	function populateField(f: iGUIElement, t: TennisScenarioItem, fn: String, ft: String){
+		f.userData = new UserData(t.id, fn, "tennisScenario", ft);
+		
+		var fv = t.getField(fn);
+		v.setElementValue(f, fv.ToString());
+		var u: UserData = f.userData;
+		switch(u.fieldType){
+			case "text":
+				var tf: iGUITextfield = f;
+				tf.blurCallback = form_field_blur;
+				tf.focusCallback = form_field_focus;
+				break;
+			case "textarea":
+				var ta: iGUITextarea = f;
+				ta.blurCallback = form_field_blur;
+				ta.focusCallback = form_field_focus;
+				break;
+			case "number":
+				var nf: iGUINumberField = f;
+				nf.blurCallback = form_field_blur;
+				nf.focusCallback = form_field_focus;
+				break;
+		}
+		
+	}
+	
+	function form_field_blur(caller: iGUIElement){
+		var u: UserData = caller.userData;
+		var fv = getView().getElementValue(caller);
+		u.value = fv;
+		scenarioUpdateHandler(u);
+	}
+	
+	function form_field_value_change_dropdownlist(caller: iGUIElement){
+		var field: iGUIDropDownList = caller;
+		var userData: UserData = field.userData;
+		userData.value = field.options[field.selectedIndex].text;
+		scenarioUpdateHandler(userData);
+	}
+	
+	function scenarioUpdateHandler(ud: UserData){
+		var item = scenarioModal.items[ud.id];
+		item.setField(ud.field, ud.value);
+	}
+	
+	function form_field_focus(caller : iGUIElement){
+		var mainView = getView();
+		var fv = mainView.getElementValue(caller);
+		mainView.openTouchKeyboard(fv.ToString());
+	}
+	
+	function form_Done_Click(caller : iGUIButton){
+		validateScenario(caller.userData);
+		if(e.hasErrors()){
+			displayErrors();
+			return;
+		}
+		e.clearErrors();
+	
+		saveScenarioAndDisplayList();
+	}
+	
+	function saveScenarioAndDisplayList(){
+		scenarioModal.save();
+		//tasksList_Init(tasksList);
+		//v.enablePanel(v.panelIds[3]);
+	}
+	
+	
+	function validateScenario(id){
+		var ok = true;
+		var scenario: TennisScenarioItem = scenarioModal.getItemById(id);
+		var nameField: iGUITextfield = panel.getField("name");
+		Debug.Log('nameField.value = '+nameField.value);
+		/*
+		e.window.label.text = "Notifications";
+		if(!nameField.value){
+			ok = false;
+			e.addError(nameField.variableName, "Name field cannot be empty");
+		}
+		
+		var nameMaxLength: int = 24;
+		if(nameField.value && nameField.value.Length>nameMaxLength){
+			ok = false;
+			e.addError(nameField.variableName, "Name field cannot be longer than "+nameMaxLength+" characters.");
+		}*/
+		
+		return ok;
+	}
+	
+	function displayErrors(){
+		getView().enablePanel(getView().panelIds[8], false);
+		var text: String = "";
+		var errors: Dictionary.<String, String> = e.getErrors();
+		for(error in errors.Values){
+			text += error+"\n";
+		}
+		e.textarea.setValue(text);
+		e.clearErrors();
+	}
+	
+	function hideErrors(){
+		getView().disablePanel(getView().panelIds[8], false);
+		e.textarea.setValue("");
+	}
+	
+	function prepareErrorElements(){
+		e.close.clickCallback = hideErrors;
+	}
+	
+	function getView(){
+		return mainPresenter.p.getView('main');
+	}
+	
+	function toggleMode_Click(caller : iGUIButton){
+		var t: String;
+
+		setMode(caller.userData);
+		if(mode == MVP.MODE_STANDARD){
+			t = 'E';
+			caller.userData = MVP.MODE_EDIT;
+		}
+		else {
+			caller.userData = MVP.MODE_STANDARD;
+			t = 'S';
+
+		}
+
+		caller.label.text = t;
+	}
+}
