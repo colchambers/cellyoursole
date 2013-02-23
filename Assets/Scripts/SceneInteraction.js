@@ -317,8 +317,8 @@ function setCurrentDraggable(draggable: GameObject){
 	currentDraggable = draggable;
 	currentDraggableOriginalScale = currentDraggable.transform.localScale;
 	currentDraggable.transform.localScale*=1.1;
-	currentDraggable.layer = LayerMask.NameToLayer("Ignore Raycast");
 	currentDraggableOriginalLayer = currentDraggable.layer;
+	currentDraggable.layer = LayerMask.NameToLayer("Ignore Raycast");
 	
 }
 

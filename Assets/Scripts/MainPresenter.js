@@ -144,6 +144,8 @@ class MainPresenter extends MVP {
 		parent.transform.position.z = p.z;
 		
 		parent.transform.rotation = Quaternion.Euler(r.x, r.y, r.z);
+		// Camera shouldn't be part of scene interaction
+		parent.layer = LayerMask.NameToLayer("Ignore Raycast");
 		
 		if(t == 'character'){
 			var cc: CapsuleCollider = parent.AddComponent(CapsuleCollider);
