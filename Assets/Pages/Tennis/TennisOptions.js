@@ -220,8 +220,8 @@ class TennisOptions extends Options {
 		button = addPageButton('0', 'New Scenario');
 		button.clickCallback = updateScenario_Click;
 		
-		button = addPageButton('0', 'New Screenshot');
-		button.clickCallback = createScreenshot_Click;
+		//button = addPageButton('0', 'New Screenshot');
+		//button.clickCallback = createScreenshot_Click;
 		
 		var row: iGUIListBox;
 		var color: Color;
