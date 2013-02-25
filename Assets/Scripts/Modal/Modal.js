@@ -143,4 +143,12 @@ class Modal {
 	function saveFile(f: String, p: String, n: String){
 		saveFile([f], p, n);
 	}
+	/**
+	 * Is the given file name a modal file name
+	 * @param String n name
+	 * @return boolean
+	 */
+	function isModalFilename(n: String){
+		return n.Contains(dataFileExtension);
+	}
 }

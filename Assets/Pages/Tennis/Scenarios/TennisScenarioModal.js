@@ -45,6 +45,9 @@ class TennisScenarioModal extends Modal{
 		var maxCurrentId : int = this.getCurrentMaxId();
 
 		for(var name in f){
+			if(!isModalFilename(name)){
+				continue;
+			}
 			item = new TennisScenarioItem(FileSystem.fileReadAllLines(name)[0]);
 			items.Add(item.id, item);
 			maxCurrentId = item.id>maxCurrentId?item.id:maxCurrentId;

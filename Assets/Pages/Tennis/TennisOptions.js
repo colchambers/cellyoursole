@@ -47,11 +47,9 @@ class TennisOptions extends Options {
 	function initialiseScenarioItems(){
 		scenarioModal = new TennisScenarioModal();
 		mainPresenter.addModal('tennisScenarios', scenarioModal);
-		
 	}
 	
 	function initialiseModes(){
-	
 		// Add mode button
 		var r: iGUIRoot = mainPresenter.panel.getContainer("root");
 		var button: iGUIButton = addPageButton(MVP.MODE_EDIT, 'E', 'instructionsButton', r);
@@ -78,7 +76,6 @@ class TennisOptions extends Options {
 	 * @return void
 	 */
 	function populateMenu(){
-
 		var menu: iGUIWindow = panel.getContainer('menu');
 		menu.label.text = "Options";
 		menu.setWidth(0.5);
@@ -105,11 +102,9 @@ class TennisOptions extends Options {
 		
 		// Disable bakground scene
 		setBackgroundEnabled(true);
-		
 	}
 	
 	function loadPage(id: String){
-		Debug.Log(id);
 		switch (id) {
 			case 'optionsMenu':
 				populateMenu();
@@ -136,7 +131,6 @@ class TennisOptions extends Options {
 	 * @return void
 	 */
 	function populateViews(){
-	
 		setBackgroundEnabled(true);
 		prepareSubPage();
 		
@@ -158,7 +152,6 @@ class TennisOptions extends Options {
 		addPageViewButton('Walking Camera', 'First Person');
 		addPageViewButton('Walking Camera 2', 'First Person 2');
 		addPageViewButton('Top Camera', 'Top');
-		
 	}
 	
 	/**
@@ -166,7 +159,6 @@ class TennisOptions extends Options {
 	 * @return void
 	 */
 	function populateElements(){
-	
 		prepareSubPage();
 		setBackgroundEnabled(true);
 		
@@ -191,7 +183,6 @@ class TennisOptions extends Options {
 		elements.Add('Player 4', 'Player 4');
 		elements.Add('ball', 'Ball');
 
-		
 		elementSwitches = new Dictionary.<String, iGUISwitch>();
 		for (var o in elements) {
 			elementSwitches.Add( o.Key,
@@ -206,7 +197,6 @@ class TennisOptions extends Options {
 	 * @return void
 	 */
 	function populateScenarios(){
-	
 		setBackgroundEnabled(true);
 		prepareSubPage();
 		
@@ -276,7 +266,6 @@ class TennisOptions extends Options {
 	}
 	
 	function createScreenshot(id: int){
-		
 		var rootPanel: iGUIElement = panel.rootPanel;
 		var panelId: int = mainPresenter.getPanelIdFromPanel(rootPanel);
 		mainPresenter.disablePanel(panelId);
