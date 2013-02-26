@@ -11,6 +11,7 @@ class MVP {
 	var list: iGUIListBox;
 	var hasBackground: Boolean = true;
 	var title: String = "MVP";
+	var id: String;
 	
 	var mode: String;
 	static public var MODE_STANDARD: String = "s";
@@ -33,6 +34,9 @@ class MVP {
 	}
 	
 	function FixedUpdate(){
+	}
+	
+	function initialiseDisplay(){
 	}
 	
 	function display() {

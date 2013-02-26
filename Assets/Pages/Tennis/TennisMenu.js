@@ -10,7 +10,10 @@ class TennisMenu extends Menu {
 	}
 	
 	function init(){
-		super();		
+		super();	
+		
+		initialiseToggle();	
+		
 		title = "The Court";
 		introText += "Tennis is a very dynamic game. You can't fully appreciate it with photos and pictures. ";
 		introText += "You need 3d to be able to understand how things look for ";
@@ -35,6 +38,16 @@ class TennisMenu extends Menu {
 			new Vector3(12.70337,0,0), 'character');
 		mainPresenter.createCameraAndParent("Top Camera", new Vector3(0.2, 9.1, 4.64), 
 			new Vector3(70,180,0));
+	}
+	
+	function initialiseToggle(){
+		// Add mode button
+		var r: iGUIRoot = mainPresenter.panel.getContainer("root");
+		var button: iGUIButton = addPageButton(this.id, 'M', 'instructionsButton', r);
+		button.setX(0);
+		button.setY(0);
+		button.setWidth(0.11);
+		button.clickCallback = mainPresenter.mvpToggle_Click;
 	}
 	
 	/**

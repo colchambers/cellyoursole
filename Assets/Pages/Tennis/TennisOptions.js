@@ -23,12 +23,23 @@ class TennisOptions extends Options {
 		super();
 		e = new Errors();
 		
+		initialiseToggle();
 		initialiseSceneItems();
 		initialiseScenarioItems();
 		initialiseModes();
 		
 		// Load Default Scenario
 		loadScenario(1);
+	}
+	
+	function initialiseToggle(){
+		// Add mode button
+		var r: iGUIRoot = mainPresenter.panel.getContainer("root");
+		var button: iGUIButton = addPageButton(this.id, 'O', 'instructionsButton', r);
+		button.setX(0.13);
+		button.setY(0);
+		button.setWidth(0.11);
+		button.clickCallback = mainPresenter.mvpToggle_Click;
 	}
 	
 	function initialiseSceneItems(){
@@ -65,10 +76,6 @@ class TennisOptions extends Options {
 	
 	function getBalls () {
 		return GameObject.FindGameObjectsWithTag('ball');
-	}
-	
-	function display() {
-		populateMenu();
 	}
 	
 	/**

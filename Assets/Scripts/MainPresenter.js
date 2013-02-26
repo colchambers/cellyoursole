@@ -80,25 +80,26 @@ class MainPresenter extends MVP {
 	function displayMVP(id: String){
 		return displayMVP(id, "");
 	}
+	
 	function displayMVP(id: String, callbackId: String){
 		//Debug.Log('id = '+id);
 		var mvp = getMVP(id);
-		//Debug.Log('mvp = '+mvp);
 		mvp.callbackId = callbackId;
-		var panel: iGUIElement = mvp.panel.rootPanel;
-		var panelId: int = getPanelIdFromPanel(panel);
-		//Debug.Log(panelId);
 		mvp.display();
-		enablePanel(panelId);
 		setCurrentMVP(mvp);
+		return mvp;
+	}
+	
+	function initialiseMVP(id: String){
+		var mvp = getMVP(id);
+		mvp.initialiseDisplay();
 		return mvp;
 	}
 	
 	function displayItemMenu(id: String){
 		var mvp:Options = getMVP('items');
 		mvp.m.setCurrentMaxIdName(id);
-		//Debug.Log('id = '+id);
-		//mvp.display();
+		initialiseMVP('items');
 		displayMVP('items');
 	}
 	
@@ -234,14 +235,67 @@ class MainPresenter extends MVP {
 			return false;
 		}
 		mvp.mainPresenter = this;
-		var menuPanel = panel.getContainer("menuPanel");
-		mvp.panel.addContainer("menu", menuPanel);
-		mvp.panel.addContainer("list", panel.getContainer("menuPanelList"));
-		mvp.panel.rootPanel = menuPanel;
+		mvp.id = pageId;
+		
+		// Create menu panel
+		var root: iGUIRoot = panel.getContainer("root");
+		var w: iGUIWindow = root.addElement('iGUIWindow');
+		var menuId = pageId+'Window';
+		w.variableName = menuId;
+		w.isDraggable = true;
+		var l: iGUIListBox = w.addElement('iGUIListBox');
+		var b: iGUIButton = w.addElement('iGUIButton');
+		var wRect: Rect = w.getAbsoluteRect();
+		var menuWidth = wRect.width;
+		//w.style.border.top = 1;
+		var bWidth = menuWidth*0.25;
+		b.setWidth(bWidth);
+		var bX = (menuWidth*0.8);
+		bX = 0;
+		b.setX(bX);
+		var height = wRect.height;
+		var bY = height*0.25*-1;
+		bY = 0;
+		b.setY(bY);
+		b.label.text = 'x';
+		b.userData = pageId;
+		b.clickCallback = mvpToggle_Click;
+		mvp.panel.addContainer("menu", w);
+		mvp.panel.addContainer("list", l);
+		mvp.panel.rootPanel = w;
+		// Hide Window
+		w.setEnabled(false);
 		addMVP(pageId, mvp);
 		mvp.init();
 		
 		return mvp;
+	}
+	
+	function mvpToggle(id){
+		var mvp: MVP = getMVP(id);
+		var m: iGUIWindow = mvp.panel.getContainer("menu");
+		m.setEnabled(!m.enabled);
+		if(m.enabled){
+			setCurrentMVP(mvp);
+		}
+	}
+	
+	function mvpShow(id){
+		var mvp: MVP = getMVP(id);
+		var m: iGUIWindow = mvp.panel.getContainer("menu");
+		m.setEnabled(true);
+		setCurrentMVP(mvp);
+	}
+	
+	function mvpHide(id){
+		var mvp: MVP = getMVP(id);
+		var m: iGUIWindow = mvp.panel.getContainer("menu");
+		m.setEnabled(false);
+	}
+	
+	function mvpToggle_Click(caller : iGUIButton){
+		Debug.Log('caller.userData = '+caller.userData);
+		mvpToggle(caller.userData);
 	}
 	
 	function initialiseTextMVP(id: String){

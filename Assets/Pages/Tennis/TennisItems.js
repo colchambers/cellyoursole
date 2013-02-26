@@ -11,10 +11,6 @@ class TennisItems extends Options {
 		hasBackground = true;
 	}
 	
-	function display() {
-		populateMenu();
-	}
-	
 	/**
 	 * Populate the settings menu 
 	 * @return void

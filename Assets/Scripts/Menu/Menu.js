@@ -16,8 +16,12 @@ class Menu extends MVP {
 		title = "The Court";
 	}
 	
-	function display() {
+	function initialiseDisplay(){
 		populateMenu();
+	}
+	
+	function display() {
+		mainPresenter.mvpShow(this.id);
 	}
 	
 	/**

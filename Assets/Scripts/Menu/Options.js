@@ -9,8 +9,12 @@ class Options extends MVP {
 		super();
 	}
 	
-	function display() {
+	function initialiseDisplay(){
 		populateMenu();
+	}
+	
+	function display() {
+		mainPresenter.mvpShow(this.id);
 	}
 	
 	/**

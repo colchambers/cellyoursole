@@ -71,20 +71,13 @@ function Start() {
 	presenter.addView('main', v);
 	presenter.currentView = 'main';
 	presenter.panel.addContainer("root", root1);
+	presenter.disablePanel(11); // Hide demo panel
 	initMenuPanels(presenter);
 	initTextPanels(presenter);
 	
-	menu = presenter.initialiseMenuMVP('menu');
-	instructions = presenter.initialiseMenuMVP('instructions');
-	
-	presenter.displayMVP('menu');
-	
-	// Options
-	optionsId = '';
-	options = presenter.initialiseMenuMVP('options');
-	presenter.initialiseMenuMVP('items');
-	
-	presenter.displayMVP('options');
+	presenter.initialiseMVP('menu');
+	presenter.initialiseMVP('options');
+	presenter.setCurrentMVP(presenter.getMVP('options'));
 	
 	// Set up view options
 	if(Application.loadedLevelName == 'Apartment Scene'){
@@ -115,6 +108,9 @@ function Start() {
 
 function FixedUpdate(){
 	var mvp = presenter.getCurrentMVP();
+	if(!mvp){
+		return;
+	}
 	mvp.FixedUpdate();
 	
 }
@@ -136,12 +132,4 @@ var textWindowLabel : iGUILabel;
 function initTextPanels(presenter: MainPresenter){
 	presenter.panel.addContainer("textWindow", textWindow);
 	presenter.panel.addContainer("textWindowLabel", textWindowLabel);
-}
-
-function showMenu_Click(caller : iGUIButton){
-	presenter.displayMVP('menu');
-}
-
-function showOptions_Click(caller : iGUIButton){
-	presenter.displayMVP('options');
 }
