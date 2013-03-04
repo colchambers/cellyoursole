@@ -388,11 +388,35 @@ class TennisOptions extends Options {
 	function loadScenario(id:int){
 		var item = getScenario(id);
 		scenarioModal.setCurrentItem(item);
-		JSONLevelSerializer.LoadNow(item.getField('data'));
+		JSONLevelSerializer.LoadNow(item.getField('data'), true, true, loadScenario_Complete);
 	}
 	
 	function loadScenario_Complete(){
 		Debug.Log('Load scenario complete.');
+		refreshScenario();
+	}
+	
+	function refreshScenario(){
+	
+		var items = getSceneItems();
+		var sc: SphereCollider;
+		var cc: CapsuleCollider;
+		for(var item in items.Values){
+		
+			// Adjust the ball colllider
+			if(item.id == 'ball'){
+				sc = item.item.collider;
+				sc.radius = 8.0;
+			}
+			
+			if(item.item.tag == 'Player'){
+				cc = item.item.collider;
+				cc.radius = 1.0;
+				cc.height = 3.0;
+			}
+			
+			
+		}
 	}
 	
 	function updateScenario_Click(caller : iGUIButton){
