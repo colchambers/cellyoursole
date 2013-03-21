@@ -70,7 +70,9 @@ class TennisMenu extends Menu {
 	
 	function createPlayerCamera(n: String, parentId: String){
 		var p: GameObject = mainPresenter.createCameraWithParentId(n, parentId);
-		p.Find(n).transform.localPosition.y +=0.77;
+		if(p){
+			p.Find(n).transform.localPosition.y +=0.77;
+		}
 	}
 	
 }

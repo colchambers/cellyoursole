@@ -29,7 +29,7 @@ class TennisOptions extends Options {
 		initialiseModes();
 		
 		// Load Default Scenario
-		loadScenario(1);
+		//loadScenario(1);
 	}
 	
 	function initialiseToggle(){
