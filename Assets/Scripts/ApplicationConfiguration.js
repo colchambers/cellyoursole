@@ -65,6 +65,16 @@ class ApplicationConfiguration {
 		m.addPageId('menu', 'tennisCourt');
 		pageDetailsById.Add(m.id, m);
 		
+		m = new PageModal();
+		m.id = 'tennisServeLesson';
+		m.className = 'TennisMenu';
+		m.levelName = 'Serve';
+		m.addPageId('options', 'tennisOptions');
+		m.addPageId('instructions', 'tennisInstructions');
+		m.addPageId('items', 'tennisItems');
+		m.addPageId('menu', 'tennisServeLesson');
+		pageDetailsById.Add(m.id, m);
+		
 		/*
 		 * Shadow Room
 		 */
