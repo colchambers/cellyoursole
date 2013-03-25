@@ -65,11 +65,19 @@ class ApplicationConfiguration {
 		m.addPageId('menu', 'tennisCourt');
 		pageDetailsById.Add(m.id, m);
 		
+		/*
+		 * Tennis Serve
+		 */
+		m = new PageModal();
+		m.id = 'tennisServeOptions';
+		m.className = 'TennisServeOptions';
+		pageDetailsById.Add(m.id, m);
+		
 		m = new PageModal();
 		m.id = 'tennisServeLesson';
 		m.className = 'TennisMenu';
 		m.levelName = 'Serve';
-		m.addPageId('options', 'tennisOptions');
+		m.addPageId('options', 'tennisServeOptions');
 		m.addPageId('instructions', 'tennisInstructions');
 		m.addPageId('items', 'tennisItems');
 		m.addPageId('menu', 'tennisServeLesson');
