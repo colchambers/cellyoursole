@@ -9,6 +9,8 @@ class TennisServeOptions extends Options {
 	var scenarioModal: TennisScenarioModal;
 	var serveModal: TennisServeModal;
 	var e: Errors;
+	
+	var targetPositions: Dictionary.<int, Vector3>;
 
 	static var ELEMENTS_SWITCH_ALL_ID = 'all';
 
@@ -28,6 +30,7 @@ class TennisServeOptions extends Options {
 		initialiseSceneItems();
 		initialiseScenarioItems();
 		initialiseModes();
+		initialiseTargets();
 		
 		// Load Default Scenario
 		//loadScenario(1);
@@ -71,12 +74,59 @@ class TennisServeOptions extends Options {
 		button.clickCallback = toggleMode_Click;
 	}
 	
+	function initialiseTargets(){
+		// Add all scene items to be used in the page. 
+		/*
+		var objects = getTargets();
+		for(var o in objects){
+			addSceneItem(o.name, o);
+		}*/
+		// Load target prefab
+		var targetPath = "Serve/Target";
+		var target: GameObject = Resources.Load(targetPath);
+		
+		// Create target vectors
+		targetPositions = new Dictionary.<int, Vector3>();
+		var count: int = 0;
+		targetPositions.Add(count++, Vector3(-1.632681, 0.02635913, -1.904958));
+		targetPositions.Add(count++, Vector3(-1.975818, 0.3824429, -2.229524));
+		targetPositions.Add(count++, Vector3(-0.910772, 0.03935509, -1.777087));
+		targetPositions.Add(count++, Vector3(-1.503947, 0.04959234, -0.9535093));
+		targetPositions.Add(count++, Vector3(-0.9535093, 0.5405222, -2.943056));
+		targetPositions.Add(count++, Vector3(-1.352175, 0.02112953, -2.103843));
+		targetPositions.Add(count++, Vector3(-0.3632056, 0.351516, -2.802535));
+		targetPositions.Add(count++, Vector3(-0.3409879, 0.03197211, -1.595707));
+		targetPositions.Add(count++, Vector3(-1.595707, 0.3824429, -2.906593));
+		targetPositions.Add(count++, Vector3(-0.544165, 0.02718322, -2.087848));
+		targetPositions.Add(count++, Vector3(-0.8513129, 0.03559705, -0.9050522));
+		
+		var targetClone : GameObject;
+		var script: TennisServeTarget;
+		for (var o in targetPositions) {
+			targetClone = GameObject.Instantiate(target, o.Value, Quaternion.identity);
+			targetClone.name += " "+o.Key;
+			targetClone.tag = 'Target';
+			script = targetClone.GetComponent(TennisServeTarget);
+			script.sceneOptions = this;
+			
+		}
+		
+	}
+	
+	function recordHit(){
+		Debug.Log('Record Hit');
+	}
+	
 	function getPlayers () {
 		return GameObject.FindGameObjectsWithTag('Player');
 	}
 	
 	function getBalls () {
 		return GameObject.FindGameObjectsWithTag('ball');
+	}
+	
+	function getTargets () {
+		return GameObject.FindGameObjectsWithTag('Target');
 	}
 	
 	/**
