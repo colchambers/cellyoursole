@@ -75,7 +75,7 @@ class ApplicationConfiguration {
 		
 		m = new PageModal();
 		m.id = 'tennisServeLesson';
-		m.className = 'TennisMenu';
+		m.className = 'TennisServeMenu';
 		m.levelName = 'Serve';
 		m.addPageId('options', 'tennisServeOptions');
 		m.addPageId('instructions', 'tennisInstructions');

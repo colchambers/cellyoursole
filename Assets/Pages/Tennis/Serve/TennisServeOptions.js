@@ -96,7 +96,7 @@ class TennisServeOptions extends Options {
 		// Create buttons.
 		var button: iGUIButton;
 		
-		button = addPageButton('1', 'Back to scene');
+		button = addPageButton('1', 'Continue Serving');
 		button.clickCallback = backToScene_Click;
 		
 		button = addPageButton('menu', 'Main Menu');

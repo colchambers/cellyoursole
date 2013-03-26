@@ -14,7 +14,7 @@ class TennisServeMenu extends Menu {
 		
 		initialiseToggle();	
 		
-		title = "The Court";
+		title = "The Serve";
 		introText += "Tennis is a very dynamic game. You can't fully appreciate it with photos and pictures. ";
 		introText += "You need 3d to be able to understand how things look for ";
 		introText += "you, your opponent or even the ball in any given scenario.\n\n";
