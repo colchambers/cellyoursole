@@ -133,3 +133,11 @@ function initTextPanels(presenter: MainPresenter){
 	presenter.panel.addContainer("textWindow", textWindow);
 	presenter.panel.addContainer("textWindowLabel", textWindowLabel);
 }
+
+function OnGUI(){
+	var mvp = presenter.getCurrentMVP();
+	if(!mvp){
+		return;
+	}
+	mvp.OnGUI();
+}

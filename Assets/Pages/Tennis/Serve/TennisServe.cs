@@ -131,23 +131,7 @@ public class TennisServe : MonoBehaviour {
 	
 	private bool instruction=false;
 	void OnGUI(){
-		string title="Shoot the target!!";
-		GUI.Label(new Rect(150, 15, 500, 40), title);
 		
-		if(!instruction){
-			if(GUI.Button(new Rect(10, 55, 130, 35), "Instruction On")){
-				instruction=true;
-			}
-		}
-		else{
-			if(GUI.Button(new Rect(10, 55, 130, 35), "Instruction Off")){
-				instruction=false;
-			}
-			
-			GUI.Box(new Rect(10, 100, 300, 65), "");
-			
-			GUI.Label(new Rect(15, 105, 290, 65), "tap on on screen to set the aim\nhold down 2 fingers on screen to charge up a fire\nright click to simulate 2 fingers charge");
-		}
 	}
 	
 }

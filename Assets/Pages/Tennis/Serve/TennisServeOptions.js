@@ -9,6 +9,7 @@ class TennisServeOptions extends Options {
 	var scenarioModal: TennisScenarioModal;
 	var serveModal: TennisServeModal;
 	var e: Errors;
+	var score: int = 0;
 	
 	var targetPositions: Dictionary.<int, Vector3>;
 
@@ -31,6 +32,8 @@ class TennisServeOptions extends Options {
 		initialiseScenarioItems();
 		initialiseModes();
 		initialiseTargets();
+		initialiseScore();
+		
 		
 		// Load Default Scenario
 		//loadScenario(1);
@@ -113,8 +116,13 @@ class TennisServeOptions extends Options {
 		
 	}
 	
+	function initialiseScore(){
+		score = 0;
+		recordHit();
+	}
+	
 	function recordHit(){
-		Debug.Log('Record Hit');
+		score++;
 	}
 	
 	function getPlayers () {
@@ -600,6 +608,29 @@ class TennisServeOptions extends Options {
 		}*/
 		
 		return ok;
+	}
+	
+	var instruction: boolean=false;
+	function OnGUI(){
+		GUI.Label (Rect (10,50,150,100), "Targets hit: "+score) ;
+		
+		var title="Shoot the target!!";
+		GUI.Label(Rect(10, 40, 500, 40), title);
+		
+		if(!instruction){
+			if(GUI.Button(Rect(10, 75, 130, 35), "Instruction On")){
+				instruction=true;
+			}
+		}
+		else{
+			if(GUI.Button(Rect(10, 75, 130, 35), "Instruction Off")){
+				instruction=false;
+			}
+			
+			GUI.Box(Rect(10, 100, 300, 65), "");
+			
+			GUI.Label(Rect(15, 105, 290, 65), "tap on screen to set the aim\nhold down 2 fingers on screen to charge up a fire\nright click to simulate 2 fingers charge");
+		}
 	}
 	
 	function displayErrors(){

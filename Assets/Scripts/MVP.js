@@ -51,6 +51,9 @@ class MVP {
 		mainPresenter.displayMVP(id);
 	}
 	
+	function OnGUI(){
+	}
+	
 	function reset() {
 		list.removeAll();
 	}
