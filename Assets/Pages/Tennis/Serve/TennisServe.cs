@@ -21,6 +21,8 @@ public class TennisServe : MonoBehaviour {
 	public int crosshairAdjustmentY=-35;
 	public float racquetRotationY = 1.6f;
 	
+	//public MainPresenter presenter;
+	
 	// Use this for initialization
 	void Start () {
 		//initiate the turret position on screen
@@ -125,6 +127,8 @@ public class TennisServe : MonoBehaviour {
 			
 			//clear the charge indicator bar
 			bar.pixelInset=new Rect(bar.pixelInset.x, bar.pixelInset.y, 0, bar.pixelInset.height);
+			
+			// Record ball strike
 		}
 	}
 	

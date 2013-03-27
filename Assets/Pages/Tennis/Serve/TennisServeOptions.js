@@ -10,6 +10,7 @@ class TennisServeOptions extends Options {
 	var serveModal: TennisServeModal;
 	var e: Errors;
 	var score: int = 0;
+	var ballsLeft: int = 10;
 	
 	var targetPositions: Dictionary.<int, Vector3>;
 
@@ -123,6 +124,10 @@ class TennisServeOptions extends Options {
 	
 	function recordHit(){
 		score++;
+	}
+	
+	function recordBallStrike(){
+		ballsLeft--;
 	}
 	
 	function getPlayers () {

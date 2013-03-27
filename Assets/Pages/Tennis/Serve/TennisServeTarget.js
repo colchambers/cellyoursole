@@ -26,4 +26,5 @@ function OnTriggerEnter(){
 	sceneOptions.recordHit();
 	
 	// Destroy target
+	Destroy(gameObject);
 }

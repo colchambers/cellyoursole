@@ -383,9 +383,17 @@ class MVP {
 	}
 	
 	function getScript(n: String) {
+		var scripts: GameObject;
 		switch(n){
 			case "sceneInteraction":
-				var scripts = GameObject.Find('Scripts');
+				scripts = GameObject.Find('Scripts');
+				if(!scripts){
+					return null;
+				}
+				return scripts.GetComponent(SceneInteraction);
+				break;
+			case "tennisServe":
+				scripts = GameObject.Find('Scripts');
 				if(!scripts){
 					return null;
 				}
