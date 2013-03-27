@@ -1,4 +1,5 @@
 #pragma strict
+import System.Reflection;
 
 class TennisServeOptions extends Options {
 
@@ -38,6 +39,7 @@ class TennisServeOptions extends Options {
 		
 		// Load Default Scenario
 		//loadScenario(1);
+		call('recordBallStrike');
 	}
 	
 	function initialiseToggle(){
@@ -617,24 +619,25 @@ class TennisServeOptions extends Options {
 	
 	var instruction: boolean=false;
 	function OnGUI(){
-		GUI.Label (Rect (10,50,150,100), "Targets hit: "+score) ;
+		GUI.Label (Rect (10,50,150,100), "Targets hit: "+score+"\nBalls left: "+ballsLeft) ;
 		
 		var title="Shoot the target!!";
 		GUI.Label(Rect(10, 40, 500, 40), title);
 		
+		var instructionsRect = Rect(10, 85, 130, 35);
 		if(!instruction){
-			if(GUI.Button(Rect(10, 75, 130, 35), "Instruction On")){
+			if(GUI.Button(instructionsRect, "Instruction On")){
 				instruction=true;
 			}
 		}
 		else{
-			if(GUI.Button(Rect(10, 75, 130, 35), "Instruction Off")){
+			if(GUI.Button(instructionsRect, "Instruction Off")){
 				instruction=false;
 			}
 			
 			GUI.Box(Rect(10, 100, 300, 65), "");
 			
-			GUI.Label(Rect(15, 105, 290, 65), "tap on screen to set the aim\nhold down 2 fingers on screen to charge up a fire\nright click to simulate 2 fingers charge");
+			GUI.Label(Rect(15, 115, 290, 65), "tap on screen to set the aim\nhold down 2 fingers on screen to charge up a fire\nright click to simulate 2 fingers charge");
 		}
 	}
 	
@@ -677,5 +680,26 @@ class TennisServeOptions extends Options {
 		}
 
 		caller.label.text = t;
+	}
+	
+	function call(m: String){
+		
+		switch(m){
+			case "recordBallStrike":
+				recordBallStrike();
+				return;
+				break;
+				
+		}
+		/*
+		// Couldn't quite get the reflection working.
+		var f: MethodInfo = this.GetType().GetMethod(m);//:MethodInfo
+		Debug.Log(f);
+		*/
+		
+		/*if(f){
+			f.Invoke(f, 1);
+		}*/
+		Debug.Log('Unable to find method: '+m);
 	}
 }

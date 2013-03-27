@@ -58,10 +58,10 @@ function Start() {
 		si.presenter = presenter;
 	}
 	
-	/*var ts:TennisServe = presenter.getScript('tennisServe');
+	var ts:TennisServe = presenter.getScript('tennisServe');
 	if(ts){
 		ts.presenter = presenter;
-	}*/
+	}
 
 	v = new View();
 	v.populatePanels();

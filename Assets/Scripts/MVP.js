@@ -54,6 +54,10 @@ class MVP {
 	function OnGUI(){
 	}
 	
+	function call(m: String){
+		
+	}
+	
 	function reset() {
 		list.removeAll();
 	}
@@ -397,7 +401,7 @@ class MVP {
 				if(!scripts){
 					return null;
 				}
-				return scripts.GetComponent(SceneInteraction);
+				return scripts.GetComponent(TennisServe);
 				break;
 		}
 	}
