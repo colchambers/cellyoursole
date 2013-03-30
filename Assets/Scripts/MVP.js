@@ -441,4 +441,51 @@ class MVP {
 	function setMode(v: String){
 		mode = v;
 	}
+	
+	/*
+	 * Timer methods.
+	 */
+	function getTimeToDisplay(time: float){
+		time = Mathf.Round(time*100)/100;
+		var timeToDisplay = floatToDecimal(time);
+		
+		return timeToDisplay + ' secs';
+	}
+	
+	function floatToDecimal(number:float){
+		return floatToDecimal(number, 3);
+	}
+	/**
+	 *	Convert a float to a number string to the given prevision
+	 * @param float number
+	 * @param int precision
+	 */
+	function floatToDecimal(number:float, precision: int){
+		var decimal = number.ToString();
+		var decimalPosition = decimal.IndexOf('.');
+		
+		if(decimal.Length-(decimalPosition+1)==precision){
+			return decimal;
+		}
+	
+		if(decimalPosition<1){
+			decimal+='.';
+			decimalPosition = decimal.Length-1;
+		}
+		var toAdd = precision-(decimal.Length-(decimalPosition+1));
+	
+		for(var i=0;i<toAdd;i++){
+			decimal+='0';
+		}
+		
+		return decimal;
+	}
+	
+	function getTimer(n){
+		return panel.getTimer(n);
+	}
+	
+	function addTimer(n: String, v){
+		panel.addTimer(n, v);
+	}
 }

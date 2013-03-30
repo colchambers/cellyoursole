@@ -14,8 +14,19 @@ class TennisServeOptions extends Options {
 	var ballsLeft: int = 10;
 	
 	var targetPositions: Dictionary.<int, Vector3>;
-
+	var challengeStarted: boolean = false;
+	var delayComplete: boolean = false;
+	
+	var challengeTimerText: String;
+	var challengeDelayText: String;
+	var randomTimerMax: int = 50;
+	
 	static var ELEMENTS_SWITCH_ALL_ID = 'all';
+	
+	static var TIMER_CHALLENGE_ID = 'challenge';
+	static var TIMER_DELAY_ID = 'delay';
+	
+	static var TIMER_DELAY_VALUE: float = 1.0;
 
 	function TennisServeOptions(m: Modal, v: View, p: Presenter){
 		super(m,v,p);
@@ -35,6 +46,7 @@ class TennisServeOptions extends Options {
 		initialiseModes();
 		initialiseTargets();
 		initialiseScore();
+		initialiseTimers();
 		
 		
 		// Load Default Scenario
@@ -122,6 +134,11 @@ class TennisServeOptions extends Options {
 	function initialiseScore(){
 		score = 0;
 		recordHit();
+	}
+	
+	function initialiseTimers(){
+		addTimer(TIMER_CHALLENGE_ID, new Timer());
+		addTimer(TIMER_DELAY_ID, new Timer());
 	}
 	
 	function recordHit(){
@@ -619,7 +636,10 @@ class TennisServeOptions extends Options {
 	
 	var instruction: boolean=false;
 	function OnGUI(){
-		GUI.Label (Rect (10,50,150,100), "Targets hit: "+score+"\nBalls left: "+ballsLeft) ;
+		var hudText: String = "Targets hit: "+score+"\nBalls left: "+ballsLeft;
+			hudText+="\nTime left: "+challengeTimerText;
+				//challengeDelayText
+		GUI.Label (Rect (10,50,150,100), hudText) ;
 		
 		var title="Shoot the target!!";
 		GUI.Label(Rect(10, 40, 500, 40), title);
@@ -701,5 +721,88 @@ class TennisServeOptions extends Options {
 			f.Invoke(f, 1);
 		}*/
 		Debug.Log('Unable to find method: '+m);
+	}
+	
+	function start(id: String){
+		challengeStarted = true;
+		delayComplete = false;
+		
+		//var b: iGUIButton = getButton(id);
+		//b.labelColor = Color.red;
+	}
+	
+	function FixedUpdate(){
+
+		//Debug.Log('reactions 1');
+		var dt = getTimer(TIMER_DELAY_ID);
+		dt.update();
+		
+		var ct = getTimer(TIMER_CHALLENGE_ID);
+		ct.update();
+		
+		if(challengeStarted){
+		
+			// Short delay for player to get ready
+			if(!delayComplete && !dt.isStarted()){
+				dt.start();
+			}
+			
+			if(!delayComplete){
+				checkDelayComplete();
+			}
+			
+			// Start challenge timer
+			if(delayComplete && !ct.isStarted()){
+				checkChallengeTimerStarted();
+			}
+
+			// Highlight a button
+			//if(ct.isStarted() && !isButtonHighlighted()){
+			//	highlightButton();
+			//}
+		}
+		
+		//if(challengeDelayLabel){
+			var challengeText = "";
+			if(dt.isStarted() && !delayComplete){
+				challengeText = "Challenge starts in "+getTimeToDisplay(dt.getTime())+" seconds";
+			}
+			else if(delayComplete){
+				challengeText = "Challenge started";
+			}
+			
+			challengeDelayText = challengeText;
+		//}
+		
+		//if(challengeTimerLabel){
+			challengeTimerText = getTimeToDisplay(ct.getTime());
+		//}
+	}
+	
+	/**
+	 * If the delay timer is started. Stop it when required time has passed and 
+	 * notify delay is complete
+	 * @return void
+	 */
+	function checkDelayComplete(){
+		var timer = getTimer(TIMER_DELAY_ID);
+		if(timer.getTime() < TIMER_DELAY_VALUE){
+			return false;
+		}
+		timer.stop();
+		timer.reset();
+		delayComplete = true;
+		return true;
+	}
+	
+	function checkChallengeTimerStarted(){
+		var i: int = Random.Range(0, randomTimerMax);
+		if(i<randomTimerMax-1){
+			return false;
+		}
+		
+		var timer = getTimer(TIMER_CHALLENGE_ID);
+		timer.start();
+		return true;
 	}
 }
