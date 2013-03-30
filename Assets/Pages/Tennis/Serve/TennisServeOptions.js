@@ -735,10 +735,6 @@ class TennisServeOptions extends Options {
 	function start(){
 		challengeStarted = true;
 		delayComplete = false;
-		Debug.Log('start');
-		
-		//var b: iGUIButton = getButton(id);
-		//b.labelColor = Color.red;
 	}
 	
 	function FixedUpdate(){
