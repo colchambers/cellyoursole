@@ -18,15 +18,19 @@ class TennisServeOptions extends Options {
 	var delayComplete: boolean = false;
 	
 	var challengeTimerText: String;
-	var challengeDelayText: String;
+	var challengeIntroText: String;
 	var randomTimerMax: int = 50;
+	var timerIntroLabel: TextMesh;
+	var timerIntroLabelHidden: boolean = false;
 	
 	static var ELEMENTS_SWITCH_ALL_ID = 'all';
 	
 	static var TIMER_CHALLENGE_ID = 'challenge';
 	static var TIMER_DELAY_ID = 'delay';
+	static var TIMER_INTRO_LABEL_ID = 'Intro timer Text';
 	
-	static var TIMER_DELAY_VALUE: float = 1.0;
+	static var TIMER_DELAY_VALUE: float = 3.0;
+	static var TIMER_CHALLENGE_VALUE: float = 30.0;
 
 	function TennisServeOptions(m: Modal, v: View, p: Presenter){
 		super(m,v,p);
@@ -51,7 +55,8 @@ class TennisServeOptions extends Options {
 		
 		// Load Default Scenario
 		//loadScenario(1);
-		call('recordBallStrike');
+		//call('recordBallStrike');
+		start();
 	}
 	
 	function initialiseToggle(){
@@ -139,6 +144,9 @@ class TennisServeOptions extends Options {
 	function initialiseTimers(){
 		addTimer(TIMER_CHALLENGE_ID, new Timer());
 		addTimer(TIMER_DELAY_ID, new Timer());
+		var timerIntroLabelGO: GameObject = GameObject.Find(TIMER_INTRO_LABEL_ID);
+		addSceneItem(timerIntroLabelGO.name, timerIntroLabelGO);
+		timerIntroLabel = timerIntroLabelGO.GetComponent(TextMesh);
 	}
 	
 	function recordHit(){
@@ -638,7 +646,8 @@ class TennisServeOptions extends Options {
 	function OnGUI(){
 		var hudText: String = "Targets hit: "+score+"\nBalls left: "+ballsLeft;
 			hudText+="\nTime left: "+challengeTimerText;
-				//challengeDelayText
+			hudText+="\nIntro left: "+challengeIntroText;
+				//challengeIntroText
 		GUI.Label (Rect (10,50,150,100), hudText) ;
 		
 		var title="Shoot the target!!";
@@ -723,9 +732,10 @@ class TennisServeOptions extends Options {
 		Debug.Log('Unable to find method: '+m);
 	}
 	
-	function start(id: String){
+	function start(){
 		challengeStarted = true;
 		delayComplete = false;
+		Debug.Log('start');
 		
 		//var b: iGUIButton = getButton(id);
 		//b.labelColor = Color.red;
@@ -764,19 +774,33 @@ class TennisServeOptions extends Options {
 		
 		//if(challengeDelayLabel){
 			var challengeText = "";
+			var challengeIntroTime: int = 0;
+			var challengeIntroMax: int = parseInt(TIMER_DELAY_VALUE);
 			if(dt.isStarted() && !delayComplete){
 				challengeText = "Challenge starts in "+getTimeToDisplay(dt.getTime())+" seconds";
+				challengeIntroTime = (challengeIntroMax-Mathf.Round(dt.getTime()))+1;
+				timerIntroLabel.text = challengeIntroTime.ToString();
 			}
 			else if(delayComplete){
 				challengeText = "Challenge started";
+				if(!timerIntroLabelHidden){
+					// Hide intro label
+					var introLabelGO: GameObject = getSceneItem(TIMER_INTRO_LABEL_ID).item;
+					introLabelGO.active = false;
+				}
 			}
 			
-			challengeDelayText = challengeText;
+			challengeIntroText = challengeText;
 		//}
 		
 		//if(challengeTimerLabel){
-			challengeTimerText = getTimeToDisplay(ct.getTime());
+			var challengeTime: int = 0;
+			var challengeMax: int = parseInt(TIMER_CHALLENGE_VALUE);
+			challengeTime = (challengeMax-Mathf.Round(ct.getTime()))+1;
+			challengeTimerText = challengeTime.ToString();
 		//}
+		
+		
 	}
 	
 	/**
