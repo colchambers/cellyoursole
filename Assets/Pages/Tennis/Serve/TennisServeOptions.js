@@ -22,6 +22,7 @@ class TennisServeOptions extends Options {
 	var randomTimerMax: int = 50;
 	var timerIntroLabel: TextMesh;
 	var timerIntroLabelHidden: boolean = false;
+	var paused: boolean = false;
 	
 	static var ELEMENTS_SWITCH_ALL_ID = 'all';
 	
@@ -31,6 +32,7 @@ class TennisServeOptions extends Options {
 	
 	static var TIMER_DELAY_VALUE: float = 3.0;
 	static var TIMER_CHALLENGE_VALUE: float = 30.0;
+	static var MVP_ID = 1;
 
 	function TennisServeOptions(m: Modal, v: View, p: Presenter){
 		super(m,v,p);
@@ -51,8 +53,7 @@ class TennisServeOptions extends Options {
 		initialiseTargets();
 		initialiseScore();
 		initialiseTimers();
-		
-		
+				
 		// Load Default Scenario
 		//loadScenario(1);
 		//call('recordBallStrike');
@@ -66,7 +67,7 @@ class TennisServeOptions extends Options {
 		button.setX(0.13);
 		button.setY(0);
 		button.setWidth(0.11);
-		button.clickCallback = mainPresenter.mvpToggle_Click;
+		button.clickCallback = pause_Click;
 	}
 	
 	function initialiseSceneItems(){
@@ -186,12 +187,12 @@ class TennisServeOptions extends Options {
 		// Create buttons.
 		var button: iGUIButton;
 		
-		button = addPageButton('1', 'Continue Serving');
+		button = addPageButton(this.id, 'Continue Serving');
 		button.clickCallback = backToScene_Click;
 		
 		button = addPageButton('menu', 'Main Menu');
 		
-		button = addPageButton('1', 'Position Zones');
+		button = addPageButton(this.id, 'Position Zones');
 		button.clickCallback = positionZones_Click;
 		
 		addPageNavigationButton('views', 'Views');
@@ -414,7 +415,9 @@ class TennisServeOptions extends Options {
 	}
 	
 	function backToScene_Click(caller : iGUIButton){
-		mainPresenter.disablePanel(11);
+		setPaused(false);
+		mainPresenter.mvpToggle(this.id);
+		//mainPresenter.disablePanel(11);
 		setBackgroundEnabled(true);
 	}
 	
@@ -739,6 +742,9 @@ class TennisServeOptions extends Options {
 	
 	function FixedUpdate(){
 
+		if(paused){
+			return;
+		}
 		//Debug.Log('reactions 1');
 		var dt = getTimer(TIMER_DELAY_ID);
 		dt.update();
@@ -824,5 +830,16 @@ class TennisServeOptions extends Options {
 		var timer = getTimer(TIMER_CHALLENGE_ID);
 		timer.start();
 		return true;
+	}
+	
+	function pause_Click(caller : iGUIButton){
+		//  Pause game
+		setPaused(true);
+		
+		mainPresenter.mvpToggle_Click(caller);
+	}
+	
+	function setPaused(v: boolean) {
+		paused = v;
 	}
 }
