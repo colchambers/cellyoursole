@@ -199,8 +199,8 @@ class TennisServeOptions extends Options {
 		addPageNavigationButton('elements', 'Elements');
 		addPageNavigationButton('scenarios', 'Scenarios');
 		
-		// Disable bakground scene
-		setBackgroundEnabled(true);
+		// Disable background scene.
+		setBackgroundEnabled(false);
 	}
 	
 	function loadPage(id: String){
@@ -418,7 +418,7 @@ class TennisServeOptions extends Options {
 		setPaused(false);
 		mainPresenter.mvpToggle(this.id);
 		//mainPresenter.disablePanel(11);
-		setBackgroundEnabled(true);
+		
 	}
 	
 	function positionZones_Click(caller : iGUIButton){
@@ -833,13 +833,26 @@ class TennisServeOptions extends Options {
 	}
 	
 	function pause_Click(caller : iGUIButton){
-		//  Pause game
+		//  Pause game.
 		setPaused(true);
 		
+		// Show pause menu.
 		mainPresenter.mvpToggle_Click(caller);
 	}
 	
 	function setPaused(v: boolean) {
 		paused = v;
+		setBackgroundEnabled(!v);
+	}
+	
+	function setBackgroundEnabled(enabled: boolean){
+		if(!hasBackground){
+			return;
+		}
+		var script :TennisServe = getScript('tennisServe');
+		if(!script){
+			return;
+		}
+		script.enabled = enabled;
 	}
 }
