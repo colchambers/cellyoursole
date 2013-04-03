@@ -140,8 +140,12 @@ class TennisServeOptions extends Options {
 	function initialiseScore(){
 		score = 0;
 		recordHit();
-		mainPresenter.mvpShow(this.id);
-		quit();
+		//mainPresenter.mvpShow(this.id);
+		
+		//quit();
+		mainPresenter.mvpShow('tennisServeLesson');
+		var mvp: TennisServeMenu = mainPresenter.getCurrentMVP();
+		mvp.populateMenu();
 	}
 	
 	function initialiseTimers(){
