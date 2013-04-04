@@ -57,7 +57,15 @@ class TennisServeOptions extends Options {
 		// Load Default Scenario
 		//loadScenario(1);
 		//call('recordBallStrike');
+		initialiseDisplay();
 		start();
+	}
+	
+	function initialiseDisplay(){
+		mainPresenter.mvpShow(this.id);
+		
+		//quit();
+		populateTitleMenu();
 	}
 	
 	function initialiseToggle(){
@@ -140,12 +148,6 @@ class TennisServeOptions extends Options {
 	function initialiseScore(){
 		score = 0;
 		recordHit();
-		//mainPresenter.mvpShow(this.id);
-		
-		//quit();
-		mainPresenter.mvpShow('tennisServeLesson');
-		var mvp: TennisServeMenu = mainPresenter.getCurrentMVP();
-		mvp.populateMenu();
 	}
 	
 	function initialiseTimers(){
@@ -210,6 +212,13 @@ class TennisServeOptions extends Options {
 	
 	function loadPage(id: String){
 		switch (id) {
+			case 'titleMenu':
+				populateTitleMenu();
+				break;
+			case 'play':
+				play();
+				return;
+				break;
 			case 'optionsMenu':
 				populateMenu();
 				break;
@@ -219,10 +228,51 @@ class TennisServeOptions extends Options {
 			case 'quit':
 				quit();
 				break;
+			default:
+				super(id);
 		}
-		super(id);
+		
 	}
 
+	/**
+	 * Populate the settings menu 
+	 * @return void
+	 */
+	function populateTitleMenu(){
+		var menu: iGUIWindow = panel.getContainer('menu');
+		menu.label.text = "Serve";
+		menu.setHeight(0.93);
+		menu.setWidth(0.96);
+		menu.setX(0.53);
+		menu.setY(0.55);
+		
+		title = "The Serve";
+		var introText: String = "Tennis is a very dynamic game. You can't fully appreciate it with photos and pictures. ";
+		introText += "You need 3d to be able to understand how things look for ";
+		introText += "you, your opponent or even the ball in any given scenario.\n\n";
+		if(introText){
+			addPageText(introText);
+		}
+		
+		reset();
+	
+		// Create buttons.
+		var button: iGUIButton;
+		
+		button = addPageButton(this.id, 'Play');
+		
+		addPageNavigationButton('views', 'Views');
+		addPageNavigationButton('quit', 'Quit');
+		
+		// Disable background scene.
+		setBackgroundEnabled(false);
+	}
+	
+	function play(){
+		setPaused(false);
+		mainPresenter.mvpHide(this.id);
+	}
+	
 	/**
 	 * Populate the settings menu 
 	 * @return void
