@@ -12,7 +12,7 @@ class TennisServeMenu extends Menu {
 	function init(){
 		super();	
 		
-		initialiseToggle();	
+		//initialiseToggle();	
 		
 		title = "The Serve";
 		introText += "Tennis is a very dynamic game. You can't fully appreciate it with photos and pictures. ";

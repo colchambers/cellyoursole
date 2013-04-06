@@ -49,7 +49,7 @@ class TennisServeOptions extends Options {
 		initialiseToggle();
 		initialiseSceneItems();
 		initialiseScenarioItems();
-		initialiseModes();
+		initialiseHelp();
 		initialiseTargets();
 		initialiseScore();
 		initialiseTimers();
@@ -58,7 +58,6 @@ class TennisServeOptions extends Options {
 		//loadScenario(1);
 		//call('recordBallStrike');
 		initialiseDisplay();
-		start();
 	}
 	
 	function initialiseDisplay(){
@@ -96,10 +95,10 @@ class TennisServeOptions extends Options {
 		mainPresenter.addModal('tennisScenarios', scenarioModal);
 	}
 	
-	function initialiseModes(){
+	function initialiseHelp(){
 		// Add mode button
 		var r: iGUIRoot = mainPresenter.panel.getContainer("root");
-		var button: iGUIButton = addPageButton(MVP.MODE_EDIT, 'E', 'instructionsButton', r);
+		var button: iGUIButton = addPageButton(MVP.MODE_EDIT, '?', 'instructionsButton', r);
 		button.setX(0.26);
 		button.setY(0);
 		button.setWidth(0.11);
@@ -198,11 +197,6 @@ class TennisServeOptions extends Options {
 		button = addPageButton(this.id, 'Continue Serving');
 		button.clickCallback = backToScene_Click;
 		
-		button = addPageButton('menu', 'Main Menu');
-		
-		button = addPageButton(this.id, 'Position Zones');
-		button.clickCallback = positionZones_Click;
-		
 		addPageNavigationButton('views', 'Views');
 		addPageNavigationButton('quit', 'Quit');
 		
@@ -217,7 +211,13 @@ class TennisServeOptions extends Options {
 				break;
 			case 'play':
 				play();
-				return;
+				//return;
+				break;
+			case 'leaderboardMenu':
+				//populateMenu();
+				break;
+			case 'creditsMenu':
+				//populateMenu();
 				break;
 			case 'optionsMenu':
 				populateMenu();
@@ -259,9 +259,10 @@ class TennisServeOptions extends Options {
 		// Create buttons.
 		var button: iGUIButton;
 		
-		button = addPageButton(this.id, 'Play');
+		button = addPageButton('play', 'Play');
 		
-		addPageNavigationButton('views', 'Views');
+		addPageNavigationButton('leaderboard', 'Leaderboard');
+		addPageNavigationButton('credits', 'Credits');
 		addPageNavigationButton('quit', 'Quit');
 		
 		// Disable background scene.
@@ -271,6 +272,7 @@ class TennisServeOptions extends Options {
 	function play(){
 		setPaused(false);
 		mainPresenter.mvpHide(this.id);
+		start();
 	}
 	
 	/**
@@ -543,6 +545,8 @@ class TennisServeOptions extends Options {
 		
 		// Show pause menu.
 		mainPresenter.mvpToggle_Click(caller);
+		
+		populateMenu();
 	}
 	
 	function setPaused(v: boolean) {
