@@ -11,7 +11,8 @@ class TennisServeOptions extends Options {
 	var serveModal: TennisServeModal;
 	var e: Errors;
 	var score: int = 0;
-	var ballsLeft: int = 10;
+	var ballsLeft: int;
+	var initialBallsLeft = 10;
 	
 	var targetPositions: Dictionary.<int, Vector3>;
 	var challengeStarted: boolean = false;
@@ -106,6 +107,10 @@ class TennisServeOptions extends Options {
 	}
 	
 	function initialiseTargets(){
+		resetTargets();
+	}
+	
+	function resetTargets(){
 		// Add all scene items to be used in the page. 
 		/*
 		var objects = getTargets();
@@ -146,7 +151,7 @@ class TennisServeOptions extends Options {
 	
 	function initialiseScore(){
 		score = 0;
-		recordHit();
+		ballsLeft = initialBallsLeft;
 	}
 	
 	function initialiseTimers(){
@@ -155,6 +160,23 @@ class TennisServeOptions extends Options {
 		var timerIntroLabelGO: GameObject = GameObject.Find(TIMER_INTRO_LABEL_ID);
 		addSceneItem(timerIntroLabelGO.name, timerIntroLabelGO);
 		timerIntroLabel = timerIntroLabelGO.GetComponent(TextMesh);
+	}
+	
+	function resetTimers(){
+		var dt = getTimer(TIMER_DELAY_ID);
+		dt.reset();
+		
+		var ct = getTimer(TIMER_CHALLENGE_ID);
+		ct.reset();
+	}
+	
+	function resetLevel(){
+		initialiseScore();
+		resetTimers();
+		resetTargets();
+		
+		challengeStarted = false;
+		delayComplete = false;
 	}
 	
 	function recordHit(){
@@ -211,12 +233,17 @@ class TennisServeOptions extends Options {
 				break;
 			case 'play':
 				play();
-				//return;
 				break;
-			case 'leaderboardMenu':
+			case 'win':
+				populateWin();
+				break;
+			case 'lose':
+				populateLose();
+				break;
+			case 'leaderboard':
 				//populateMenu();
 				break;
-			case 'creditsMenu':
+			case 'credits':
 				//populateMenu();
 				break;
 			case 'optionsMenu':
@@ -270,6 +297,7 @@ class TennisServeOptions extends Options {
 	}
 	
 	function play(){
+		resetLevel();
 		setPaused(false);
 		mainPresenter.mvpHide(this.id);
 		start();
@@ -302,22 +330,56 @@ class TennisServeOptions extends Options {
 		addPageViewButton('Walking Camera 2', 'First Person 2');
 		addPageViewButton('Top Camera', 'Top');
 	}
+	
+	/**
+	 * Populate the win menu 
+	 * @return void
+	 */
+	function populateWin(){
+
+		setPaused(true);
+		
+		var menu: iGUIWindow = panel.getContainer('menu');
+		menu.label.text = "You Lose";
+		menu.setHeight(0.93);
+		menu.setWidth(0.96);
+		menu.setX(0.53);
+		menu.setY(0.55);
+		
+		var text="Congratulation. You Win.\n\n";;
+		addPageText(text, 0.5);
+	
+		// Create buttons.
+		addPageButton('titleMenu', 'Title Menu');
+		
+		// Disable background scene.
+		setBackgroundEnabled(false);
+	}
 
 	/**
 	 * Populate the lose menu 
 	 * @return void
 	 */
 	function populateLose(){
+
 		setPaused(true);
-		prepareSubPage();
-		Debug.Log('lose');
+		reset();
 		
-		var text="";
+		var menu: iGUIWindow = panel.getContainer('menu');
+		menu.label.text = "You Lose";
+		menu.setHeight(0.93);
+		menu.setWidth(0.96);
+		menu.setX(0.53);
+		menu.setY(0.55);
 		
-		text ="You lose.";
-		text+="Select different view points from the list below.\n";
-			
+		var text="You lose. Try again.\n\n";;
 		addPageText(text, 0.5);
+	
+		// Create buttons.
+		addPageButton('titleMenu', 'Title Menu');
+		
+		// Disable background scene.
+		setBackgroundEnabled(false);
 	}
 	
 	/**
