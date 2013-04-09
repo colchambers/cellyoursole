@@ -11,7 +11,9 @@ class TennisServeOptions extends Options {
 	var serveModal: TennisServeModal;
 	var e: Errors;
 	var score: int = 0;
-	var ballsLeft: int;
+	var targetsRemaining: int;
+	var initialTargetsRemaining: int = 10;
+	var attemptsRemaining: int;
 	var initialBallsLeft = 10;
 	
 	var targetPositions: Dictionary.<int, Vector3>;
@@ -151,7 +153,11 @@ class TennisServeOptions extends Options {
 	
 	function initialiseScore(){
 		score = 0;
-		ballsLeft = initialBallsLeft;
+		targetsRemaining = initialTargetsRemaining;
+		attemptsRemaining = initialBallsLeft;
+		
+		// Debug
+		attemptsRemaining = 0;
 	}
 	
 	function initialiseTimers(){
@@ -180,11 +186,11 @@ class TennisServeOptions extends Options {
 	}
 	
 	function recordHit(){
-		score++;
+		targetsRemaining--;
 	}
 	
 	function recordBallStrike(){
-		ballsLeft--;
+		attemptsRemaining--;
 	}
 	
 	function getPlayers () {
@@ -204,14 +210,8 @@ class TennisServeOptions extends Options {
 	 * @return void
 	 */
 	function populateMenu(){
-		var menu: iGUIWindow = panel.getContainer('menu');
-		menu.label.text = "Options";
-		menu.setWidth(0.5);
-		menu.setHeight(1);
-		menu.setX(1.0);
-		menu.setY(1.0);
-		
-		reset();
+	
+		reset("Paused");
 	
 		// Create buttons.
 		var button: iGUIButton;
@@ -222,10 +222,13 @@ class TennisServeOptions extends Options {
 		addPageNavigationButton('views', 'Views');
 		addPageNavigationButton('quit', 'Quit');
 		
-		// Disable background scene.
-		setBackgroundEnabled(false);
 	}
 	
+	/**
+	 * Load the given page.
+	 * @param String id id of the page to load
+	 * @return void
+	 */
 	function loadPage(id: String){
 		switch (id) {
 			case 'titleMenu':
@@ -260,18 +263,22 @@ class TennisServeOptions extends Options {
 		}
 		
 	}
+	
+	/**
+	 * Display the current mvp then load the given page.
+	 * @param String id id of the page to load
+	 * @return void
+	 */
+	function displayPage(id: String){
+		mainPresenter.mvpShow(this.id);
+		loadPage(id);
+	}
 
 	/**
 	 * Populate the settings menu 
 	 * @return void
 	 */
 	function populateTitleMenu(){
-		var menu: iGUIWindow = panel.getContainer('menu');
-		menu.label.text = "Serve";
-		menu.setHeight(0.93);
-		menu.setWidth(0.96);
-		menu.setX(0.53);
-		menu.setY(0.55);
 		
 		title = "The Serve";
 		var introText: String = "Tennis is a very dynamic game. You can't fully appreciate it with photos and pictures. ";
@@ -281,7 +288,7 @@ class TennisServeOptions extends Options {
 			addPageText(introText);
 		}
 		
-		reset();
+		reset(title);
 	
 		// Create buttons.
 		var button: iGUIButton;
@@ -292,8 +299,6 @@ class TennisServeOptions extends Options {
 		addPageNavigationButton('credits', 'Credits');
 		addPageNavigationButton('quit', 'Quit');
 		
-		// Disable background scene.
-		setBackgroundEnabled(false);
 	}
 	
 	function play(){
@@ -337,23 +342,14 @@ class TennisServeOptions extends Options {
 	 */
 	function populateWin(){
 
-		setPaused(true);
-		
-		var menu: iGUIWindow = panel.getContainer('menu');
-		menu.label.text = "You Lose";
-		menu.setHeight(0.93);
-		menu.setWidth(0.96);
-		menu.setX(0.53);
-		menu.setY(0.55);
+		reset("You win");
 		
 		var text="Congratulation. You Win.\n\n";;
 		addPageText(text, 0.5);
 	
 		// Create buttons.
 		addPageButton('titleMenu', 'Title Menu');
-		
-		// Disable background scene.
-		setBackgroundEnabled(false);
+
 	}
 
 	/**
@@ -362,15 +358,7 @@ class TennisServeOptions extends Options {
 	 */
 	function populateLose(){
 
-		setPaused(true);
-		reset();
-		
-		var menu: iGUIWindow = panel.getContainer('menu');
-		menu.label.text = "You Lose";
-		menu.setHeight(0.93);
-		menu.setWidth(0.96);
-		menu.setX(0.53);
-		menu.setY(0.55);
+		reset("You lose");
 		
 		var text="You lose. Try again.\n\n";;
 		addPageText(text, 0.5);
@@ -378,8 +366,26 @@ class TennisServeOptions extends Options {
 		// Create buttons.
 		addPageButton('titleMenu', 'Title Menu');
 		
-		// Disable background scene.
-		setBackgroundEnabled(false);
+	}
+	
+	function reset(title: String){
+		reset();
+		setDefaultMenuSize(title);
+	}
+	
+	function reset(){
+		setPaused(true);
+		super();
+		setDefaultMenuSize("Serve");
+	}
+	
+	function setDefaultMenuSize(title: String){
+		var menu: iGUIWindow = panel.getContainer('menu');
+		menu.label.text = title;
+		menu.setHeight(0.93);
+		menu.setWidth(0.96);
+		menu.setX(0.53);
+		menu.setY(0.55);
 	}
 	
 	/**
@@ -414,9 +420,13 @@ class TennisServeOptions extends Options {
 		si.currentCamera.enabled = true;
 	}
 	
+	function calculateScore(){
+		return initialTargetsRemaining-targetsRemaining;
+	}
+	
 	var instruction: boolean=false;
 	function OnGUI(){
-		var hudText: String = "Targets hit: "+score+"\nBalls left: "+ballsLeft;
+		var hudText: String = "Targets hit: "+calculateScore()+"\nAttempts remaining: "+attemptsRemaining;
 			hudText+="\nTime left: "+challengeTimerText;
 			hudText+="\nIntro left: "+challengeIntroText;
 				//challengeIntroText
@@ -509,6 +519,30 @@ class TennisServeOptions extends Options {
 		delayComplete = false;
 	}
 	
+	function checkHasWon() {
+	
+		var challengeTime: int = getChallengeTime();
+		if(attemptsRemaining>-1 && challengeTime && !targetsRemaining){
+			Debug.Log('Won');
+			return true;
+		}
+		
+		Debug.Log('Not won');
+		return false;
+	}
+	
+	function checkHasLost() {
+	
+		var challengeTime: int = getChallengeTime();
+		if(targetsRemaining && (attemptsRemaining<0 || !challengeTime)){
+			Debug.Log('Lost');
+			return true;
+		}
+		
+		Debug.Log('Not lost');
+		return false;
+	}
+	
 	function FixedUpdate(){
 
 		if(paused){
@@ -522,6 +556,16 @@ class TennisServeOptions extends Options {
 		ct.update();
 		
 		if(challengeStarted){
+		
+			// have you won?
+			if(checkHasWon()){
+				displayPage('win');
+			}
+			
+			// have you lost?
+			if(checkHasLost()){
+				displayPage('lose');
+			}
 		
 			// Short delay for player to get ready
 			if(!delayComplete && !dt.isStarted()){
@@ -565,13 +609,19 @@ class TennisServeOptions extends Options {
 		//}
 		
 		//if(challengeTimerLabel){
-			var challengeTime: int = 0;
-			var challengeMax: int = parseInt(TIMER_CHALLENGE_VALUE);
-			challengeTime = (challengeMax-Mathf.Round(ct.getTime()))+1;
+			var challengeTime: int = getChallengeTime();
 			challengeTimerText = challengeTime.ToString();
 		//}
 		
 		
+	}
+	
+	function getChallengeTime(){
+		var ct = getTimer(TIMER_CHALLENGE_ID);
+		var challengeTime: int = 0;
+		var challengeMax: int = parseInt(TIMER_CHALLENGE_VALUE);
+		challengeTime = (challengeMax-Mathf.Round(ct.getTime()))+1;
+		return challengeTime;
 	}
 	
 	/**
