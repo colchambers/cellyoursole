@@ -84,6 +84,16 @@ class ApplicationConfiguration {
 		pageDetailsById.Add(m.id, m);
 		
 		/*
+		 * Garden
+		 */
+		m = new PageModal();
+		m.id = 'garden';
+		m.className = 'GardenMenu';
+		m.levelName = 'Garden';
+		m.addPageId('menu', 'garden');
+		pageDetailsById.Add(m.id, m);
+		
+		/*
 		 * Shadow Room
 		 */
 		m = new PageModal();
