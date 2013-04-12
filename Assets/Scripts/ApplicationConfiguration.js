@@ -84,6 +84,17 @@ class ApplicationConfiguration {
 		pageDetailsById.Add(m.id, m);
 		
 		/*
+		 * Tennis Serve Height
+		 */
+		m = new PageModal();
+		m.id = 'tennisServeHeightLesson';
+		m.className = 'TennisServeOptions';
+		m.levelName = 'Serve Height';
+		m.addPageId('options', 'tennisServeHeightLesson');
+		//m.addPageId('menu', 'tennisServeHeightLesson');
+		pageDetailsById.Add(m.id, m);
+		
+		/*
 		 * Garden
 		 */
 		m = new PageModal();
