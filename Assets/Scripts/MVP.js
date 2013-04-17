@@ -115,6 +115,17 @@ class MVP {
 		//panel.addButton('back', button);
 	}
 	
+	function addPageSlider (id: String, t: String, c: iGUIEventCallback, s: String, p: iGUIListBox) {
+		return initialisePageSlider(createSlider(p, s), id, t, c);
+	}
+	function initialisePageSlider(e: iGUIFloatHorizontalSlider, id: String, t: String, c: iGUIEventCallback){
+		e.label.text = t;
+		e.valueChangeCallback = c;
+		e.userData = id;
+		//panel.addButton('back', button);
+		return e;
+	}
+	
 	function addLoadPageByIdButton(id: String, t: String){
 		var button: iGUIButton = addPageButton(id, t, 'none');
 		button.clickCallback = loadPageById_Click;
@@ -362,6 +373,46 @@ class MVP {
 	
 	function createSwitch(p: iGUIListBox){
 		return createSwitch(p, 'instructionsButton');
+	}
+	
+	function createSlider(p: iGUIListBox){
+		return createSlider(p, 'instructionsButton');
+	}
+	
+	/*
+	 * Create a button with standard settings appended to the given element
+	 * @param p iGUIElement parent
+	 * @param s String style id
+	 * @return iGUIFloatHorizontalSlider
+	 */
+	function createSlider(p: iGUIListBox, s: String){
+		var e: iGUIFloatHorizontalSlider = p.addElement('iGUIFloatHorizontalSlider');
+		initialiseSlider(e, s);
+		return e;
+	}
+	
+	/*
+	 * Create a button with standard settings appended to the given element
+	 * @param p iGUIElement parent
+	 * @param s String style id
+	 * @return iGUILabel
+	 */
+	function createSlider(p: iGUIContainer, s: String){
+		var e: iGUIFloatHorizontalSlider = p.addElement('iGUIFloatHorizontalSlider');
+		initialiseSlider(e, s);
+		return e;
+	}
+	
+	function initialiseSlider(e: iGUIFloatHorizontalSlider, s: String){
+		//e.style.wordWrap = true;
+		e.setWidth(1);
+		if(s=='none'){
+			return e;
+		}
+		//e.style.fixedHeight = 42;
+		//e.style.alignment = TextAnchor.MiddleCenter;
+		//setElementStyle (e.style, s);
+		return e;
 	}
 
 	function back_Click(caller : iGUIButton){

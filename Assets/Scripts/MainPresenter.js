@@ -181,6 +181,17 @@ class MainPresenter extends MVP {
 		return go;
 	}
 	
+	function createCamera(n: String, p: Vector3){
+		var go: GameObject = new GameObject(n);
+		go.transform.position = p;
+		var c: Camera = go.AddComponent(Camera);
+		c.enabled = false;
+		go.AddComponent("FlareLayer");
+		go.AddComponent("GUILayer");
+		go.tag = 'MainCamera';
+		return go;
+	}
+	
 	function playSound(s: String){
 		// Creatwe game object
 		var go: GameObject = new GameObject('Phoneme Sound');

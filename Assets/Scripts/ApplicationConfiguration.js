@@ -88,7 +88,7 @@ class ApplicationConfiguration {
 		 */
 		m = new PageModal();
 		m.id = 'tennisServeHeightLesson';
-		m.className = 'TennisServeOptions';
+		m.className = 'TennisServeHeightOptions';
 		m.levelName = 'Serve Height';
 		m.addPageId('options', 'tennisServeHeightLesson');
 		//m.addPageId('menu', 'tennisServeHeightLesson');
@@ -224,8 +224,8 @@ class ApplicationConfiguration {
 			pageIdByLevelId.Add(p.levelName, p.id);
 		}
 		
-		//Debug.Log('pageIdByLevelId = ');
-		//Debug.Log(pageIdByLevelId);
+		// Debug.Log('pageIdByLevelId = ');
+		// Debug.Log(pageIdByLevelId);
 	}
 	
 	function getPageByLevelId(id){

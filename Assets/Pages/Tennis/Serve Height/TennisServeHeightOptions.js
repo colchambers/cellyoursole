@@ -26,6 +26,10 @@ class TennisServeHeightOptions extends Options {
 	var timerIntroLabel: TextMesh;
 	var timerIntroLabelHidden: boolean = false;
 	var paused: boolean = false;
+	var power: float = 0.5;
+	var targetPositionAdjustment: Vector3 = Vector3(0.5, 0.5, 0.5);
+	var servePositionAdjustment: Vector3 = Vector3(0, 0, 0);
+	var currentCamera: Camera;
 	
 	static var ELEMENTS_SWITCH_ALL_ID = 'all';
 	
@@ -36,6 +40,13 @@ class TennisServeHeightOptions extends Options {
 	static var TIMER_DELAY_VALUE: float = 3.0;
 	static var TIMER_CHALLENGE_VALUE: float = 30.0;
 	static var MVP_ID = 1;
+	
+	static var TARGET_SERVICE_BOX_ID = 'ServiceBoxTarget';
+	static var BALL_ID = 'Ball';
+	
+	static var CAMERA_MAIN_ID = 'Main Camera';
+	static var CAMERA_UMPIRE_ID = 'cameraUmpire';
+	static var CAMERA_SIDE_RIGHT_ID = 'cameraSideRight';
 
 	function TennisServeHeightOptions(m: Modal, v: View, p: Presenter){
 		super(m,v,p);
@@ -56,6 +67,7 @@ class TennisServeHeightOptions extends Options {
 		initialiseTargets();
 		initialiseScore();
 		initialiseTimers();
+		initialiseCameras();
 				
 		// Load Default Scenario
 		//loadScenario(1);
@@ -109,7 +121,16 @@ class TennisServeHeightOptions extends Options {
 	}
 	
 	function initialiseTargets(){
+		// Add all scene items to be used in the page. 
+		var objects = getTargets();
+		for(var o in objects){
+			addSceneItem(o.name, o);
+		}
 		
+		// Configure associated scripts
+		var serviceBoxTarget = getSceneItem('ServiceBoxTarget').item;
+		var serviceBoxTargetScript: TennisServeServiceTarget = serviceBoxTarget.GetComponent(TennisServeServiceTarget);
+			serviceBoxTargetScript.sceneOptions = this;
 	}
 	
 	function initialiseScore(){
@@ -127,6 +148,20 @@ class TennisServeHeightOptions extends Options {
 		var timerIntroLabelGO: GameObject = GameObject.Find(TIMER_INTRO_LABEL_ID);
 		addSceneItem(timerIntroLabelGO.name, timerIntroLabelGO);
 		timerIntroLabel = timerIntroLabelGO.GetComponent(TextMesh);
+	}
+	
+	function initialiseCameras(){
+		currentCamera = Camera.main;
+		var go: GameObject;
+		go = GameObject.Find(CAMERA_MAIN_ID);
+		addSceneItem(CAMERA_MAIN_ID, go);
+		go = mainPresenter.createCamera(CAMERA_UMPIRE_ID, Vector3(-1.561276, 0.3756608, -4.524526));
+		go.transform.rotation = Quaternion.Euler(Vector3(0,16.83746,0));
+		addSceneItem(CAMERA_UMPIRE_ID, go);
+		
+		go = mainPresenter.createCamera(CAMERA_SIDE_RIGHT_ID, Vector3(-6.523982, 1.242765, 0.07972717));
+		go.transform.rotation = Quaternion.Euler(Vector3(0,90,1.08052e-07));
+		addSceneItem(go.name, go);
 	}
 	
 	function resetTimers(){
@@ -197,6 +232,9 @@ class TennisServeHeightOptions extends Options {
 			case 'play':
 				play();
 				break;
+			case 'serve':
+				serve();
+				break;
 			case 'win':
 				populateWin();
 				break;
@@ -240,7 +278,7 @@ class TennisServeHeightOptions extends Options {
 	 */
 	function populateTitleMenu(){
 		
-		title = "The Serve";
+		title = "The Serve: Height";
 		var introText: String = "Tennis is a very dynamic game. You can't fully appreciate it with photos and pictures. ";
 		introText += "You need 3d to be able to understand how things look for ";
 		introText += "you, your opponent or even the ball in any given scenario.\n\n";
@@ -261,10 +299,115 @@ class TennisServeHeightOptions extends Options {
 		
 	}
 	
+	/**
+	 * Populate the settings menu 
+	 * @return void
+	 */
+	function populateControlsMenu(){
+		
+		title = "Controls";
+		
+		reset(title);
+		setPaused(true);
+		var menu: iGUIWindow = panel.getContainer('menu');
+		menu.setWidth(0.5);
+		menu.setHeight(1);
+		menu.setX(1.0);
+		menu.setY(1.0);
+	
+		// Create buttons.
+		var button: iGUIButton;
+		
+		button = addPageButton('serve', 'Serve');
+		
+		var slider: iGUIFloatHorizontalSlider;
+		slider = addPageSlider ('power', 'power', handlePowerSlider_change, 'instructionsButton', list);
+		slider.setValue(power);
+		
+		slider = addPageSlider ('targetY', 'Target Height', handleTargetPositionSlider_change, 'instructionsButton', list);
+		slider.setValue(targetPositionAdjustment.y);
+		
+		slider = addPageSlider ('targetX', 'Target Rotation', handleTargetPositionSlider_change, 'instructionsButton', list);
+		slider.setValue(targetPositionAdjustment.x);
+		
+		slider = addPageSlider ('targetZ', 'Target Depth', handleTargetPositionSlider_change, 'instructionsButton', list);
+		slider.setValue(targetPositionAdjustment.z);
+		
+		slider = addPageSlider ('serveX', 'Ball Horizontal Position', handleServePositionSlider_change, 'instructionsButton', list);
+		slider.setValue(servePositionAdjustment.x);
+		
+		slider = addPageSlider ('serveY', 'Ball Height', handleServePositionSlider_change, 'instructionsButton', list);
+		slider.setValue(servePositionAdjustment.y);
+		
+		addPageViewButton(CAMERA_MAIN_ID, 'Default');
+		addPageViewButton(CAMERA_UMPIRE_ID, 'Umpire');
+		addPageViewButton(CAMERA_SIDE_RIGHT_ID, 'Side right');
+		
+	}
+	
+	function handlePowerSlider_change (caller: iGUIFloatHorizontalSlider) {
+		power = caller.value;
+	}
+	
+	function handleTargetPositionSlider_change (caller: iGUIFloatHorizontalSlider) {
+		switch(caller.userData){
+			case "targetX":
+				targetPositionAdjustment.x = caller.value;
+				break;
+			case "targetY":
+				targetPositionAdjustment.y = caller.value;
+				break;
+			case "targetZ":
+				targetPositionAdjustment.z = caller.value;
+				break;
+		}
+	}
+	
+	function handleServePositionSlider_change (caller: iGUIFloatHorizontalSlider) {
+		switch(caller.userData){
+			case "serveX":
+				servePositionAdjustment.x = caller.value;
+				break;
+			case "serveY":
+				servePositionAdjustment.y = caller.value;
+				break;
+			case "serveZ":
+				servePositionAdjustment.z = caller.value;
+				break;
+		}
+	}
+	
+	function serve(){
+		Debug.Log('Start serve');
+		// Load target prefab
+		var ballPrefabPath = "Serve Height/Ball";
+		var ballPrefab: GameObject = Resources.Load(ballPrefabPath);
+		
+		// Create ball
+		var ba = servePositionAdjustment;
+		var ballPosition = Vector3(0.3637002+ba.x, 2.00639+ba.y, 4.633946+ba.z);
+		Debug.Log('ballPosition = '+ballPosition);
+		var ball: GameObject = GameObject.Instantiate(ballPrefab, ballPosition, Quaternion.identity);
+			ball.name += " clone";
+			ball.tag = 'ball';
+		
+		// Get target
+		var target: GameObject = getSceneItem(TARGET_SERVICE_BOX_ID).item;
+		var p: Vector3 = target.transform.position;
+		var a = targetPositionAdjustment;
+		var adjustedTarget: Vector3 = Vector3(p.x+a.x, p.y+a.y, p.z+a.z);
+		
+		// Aim at target
+		ball.transform.LookAt(adjustedTarget);
+
+		// Add force
+		ball.rigidbody.AddRelativeForce(Vector3.forward * (power*1000));
+	}
+	
 	function play(){
 		resetLevel();
 		setPaused(false);
-		mainPresenter.mvpHide(this.id);
+		//mainPresenter.mvpHide(this.id);
 		start();
 	}
 	
@@ -372,12 +515,10 @@ class TennisServeHeightOptions extends Options {
 	}
 	
 	function setView_click (caller: iGUIButton) {
-		var c: Camera = GameObject.Find(caller.userData).GetComponent(Camera);;
-		var si :SceneInteraction = getScript('sceneInteraction');
-		si.currentCamera.enabled = false;
-		si.currentCamera = c;
-		si.dist = c.transform.localPosition.z;
-		si.currentCamera.enabled = true;
+		var c: Camera = getSceneItem(caller.userData).item.GetComponent(Camera);;
+		currentCamera.enabled = false;
+		currentCamera = c;
+		currentCamera.enabled = true;
 	}
 	
 	function calculateScore(){
@@ -477,6 +618,7 @@ class TennisServeHeightOptions extends Options {
 	function start(){
 		challengeStarted = true;
 		delayComplete = false;
+		populateControlsMenu();
 	}
 	
 	function checkHasWon() {
