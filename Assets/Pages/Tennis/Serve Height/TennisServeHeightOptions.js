@@ -27,7 +27,7 @@ class TennisServeHeightOptions extends Options {
 	var timerIntroLabelHidden: boolean = false;
 	var paused: boolean = false;
 	var power: float = 0.5;
-	var targetPositionAdjustment: Vector3 = Vector3(0.5, 0.5, 0.5);
+	var targetPositionAdjustment: Vector3 = Vector3(0.5, 0.5, 0);
 	var servePositionAdjustment: Vector3 = Vector3(0, 0, 0);
 	var currentCamera: Camera;
 	
@@ -324,17 +324,17 @@ class TennisServeHeightOptions extends Options {
 		slider = addPageSlider ('power', 'power', handlePowerSlider_change, 'instructionsButton', list);
 		slider.setValue(power);
 		
-		slider = addPageSlider ('targetY', 'Target Height', handleTargetPositionSlider_change, 'instructionsButton', list);
+		slider = addPageSlider ('targetY', 'Aim Height', handleTargetPositionSlider_change, 'instructionsButton', list);
 		slider.setValue(targetPositionAdjustment.y);
 		
-		slider = addPageSlider ('targetX', 'Target Rotation', handleTargetPositionSlider_change, 'instructionsButton', list);
-		slider.setValue(targetPositionAdjustment.x);
+		//slider = addPageSlider ('targetX', 'Aim direction', handleTargetPositionSlider_change, 'instructionsButton', list);
+		//slider.setValue(targetPositionAdjustment.x);
 		
-		slider = addPageSlider ('targetZ', 'Target Depth', handleTargetPositionSlider_change, 'instructionsButton', list);
-		slider.setValue(targetPositionAdjustment.z);
+		//slider = addPageSlider ('targetZ', 'Target Depth', handleTargetPositionSlider_change, 'instructionsButton', list);
+		//slider.setValue(targetPositionAdjustment.z);
 		
-		slider = addPageSlider ('serveX', 'Ball Horizontal Position', handleServePositionSlider_change, 'instructionsButton', list);
-		slider.setValue(servePositionAdjustment.x);
+		//slider = addPageSlider ('serveX', 'Ball Horizontal Position', handleServePositionSlider_change, 'instructionsButton', list);
+		//slider.setValue(servePositionAdjustment.x);
 		
 		slider = addPageSlider ('serveY', 'Ball Height', handleServePositionSlider_change, 'instructionsButton', list);
 		slider.setValue(servePositionAdjustment.y);
@@ -378,27 +378,28 @@ class TennisServeHeightOptions extends Options {
 	}
 	
 	function serve(){
-		Debug.Log('Start serve');
 		// Load target prefab
 		var ballPrefabPath = "Serve Height/Ball";
 		var ballPrefab: GameObject = Resources.Load(ballPrefabPath);
 		
 		// Create ball
 		var ba = servePositionAdjustment;
-		var ballPosition = Vector3(0.3637002+ba.x, 2.00639+ba.y, 4.633946+ba.z);
-		Debug.Log('ballPosition = '+ballPosition);
+		var ballPosition = Vector3(0.3637002+(ba.x*3), 2.00639+((ba.y-0.5)*3), 4.633946+ba.z);
 		var ball: GameObject = GameObject.Instantiate(ballPrefab, ballPosition, Quaternion.identity);
 			ball.name += " clone";
 			ball.tag = 'ball';
 		
 		// Get target
 		var target: GameObject = getSceneItem(TARGET_SERVICE_BOX_ID).item;
-		var p: Vector3 = target.transform.position;
-		var a = targetPositionAdjustment;
-		var adjustedTarget: Vector3 = Vector3(p.x+a.x, p.y+a.y, p.z+a.z);
 		
 		// Aim at target
-		ball.transform.LookAt(adjustedTarget);
+		target.transform.rotation = Quaternion.EulerAngles(Vector3(0,0,0));
+		target.transform.localRotation = Quaternion.EulerAngles(Vector3(0,0,0));
+		ball.transform.LookAt(target.transform.position);
+		
+		// Adjust aim: Unsure why the opposite direction seems to work
+		ball.transform.Rotate(Vector3.left, targetPositionAdjustment.y*50);
+		ball.transform.Rotate(Vector3.up, (targetPositionAdjustment.x-0.5)*50);
 
 		// Add force
 		ball.rigidbody.AddRelativeForce(Vector3.forward * (power*1000));
