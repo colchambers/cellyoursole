@@ -67,7 +67,7 @@ function OnTap(tap: Tap){
 		turret.LookAt(p);
 	}
 	//crosshair default pixel inset is (-35, -35, 70, 70) and it's transform is positioned at (0, 0, 0)
-	crosshair.pixelInset=Rect(tap.pos.x+crosshairAdjustmentX, tap.pos.y+crosshairAdjustmentY, 70, 70);
+	//crosshair.pixelInset=Rect(tap.pos.x+crosshairAdjustmentX, tap.pos.y+crosshairAdjustmentY, 70, 70);
 	
 }
 
