@@ -632,7 +632,7 @@ class TennisServeHeightOptions extends Options {
 			return true;
 		}
 		
-		Debug.Log('Not won');
+		//Debug.Log('Not won');
 		return false;
 	}
 	
@@ -644,7 +644,7 @@ class TennisServeHeightOptions extends Options {
 			return true;
 		}
 		
-		Debug.Log('Not lost');
+		//Debug.Log('Not lost');
 		return false;
 	}
 	
@@ -653,7 +653,7 @@ class TennisServeHeightOptions extends Options {
 		if(paused){
 			return;
 		}
-		Debug.Log('reactions 1');
+		//Debug.Log('reactions 1');
 		var dt = getTimer(TIMER_DELAY_ID);
 		dt.update();
 		
@@ -662,7 +662,7 @@ class TennisServeHeightOptions extends Options {
 		
 		if(challengeStarted){
 		
-			Debug.Log('challenge started');
+			//Debug.Log('challenge started');
 			// have you won?
 			if(checkHasWon()){
 				displayPage('win');

@@ -13,10 +13,13 @@ function OnCollisionEnter(collision : Collision) {
     	return;
     }
     
+    Debug.Log('ball collided');
     // Hit the wrong object. Ball is disabled.
     if(collision.gameObject.name!=='ServiceBoxTarget'){
     	//sceneOptions.recordIncorrectHit();
     	objectEnabled = false;
+    	Debug.Log('collision.gameObject.name = '+collision.gameObject.name);
+    	Debug.Log('ball disabled');
     	return;
     }
     
