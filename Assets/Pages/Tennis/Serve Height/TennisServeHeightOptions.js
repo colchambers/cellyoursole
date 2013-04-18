@@ -12,9 +12,9 @@ class TennisServeHeightOptions extends Options {
 	var e: Errors;
 	var score: int = 0;
 	var targetsRemaining: int;
-	var initialTargetsRemaining: int = 10;
+	var initialTargetsRemaining: int = 1;
 	var attemptsRemaining: int;
-	var initialBallsLeft = 10;
+	var initialBallsLeft = 3;
 	
 	var targetPositions: Dictionary.<int, Vector3>;
 	var challengeStarted: boolean = false;
@@ -308,7 +308,7 @@ class TennisServeHeightOptions extends Options {
 		title = "Controls";
 		
 		reset(title);
-		setPaused(true);
+		setPaused(false);
 		var menu: iGUIWindow = panel.getContainer('menu');
 		menu.setWidth(0.5);
 		menu.setHeight(1);
@@ -387,8 +387,10 @@ class TennisServeHeightOptions extends Options {
 		var ballPosition = Vector3(0.3637002+(ba.x*3), 2.00639+((ba.y-0.5)*3), 4.633946+ba.z);
 		var ball: GameObject = GameObject.Instantiate(ballPrefab, ballPosition, Quaternion.identity);
 			ball.name += " clone";
-			ball.tag = 'ball';
-		
+			ball.tag = 'ball';// Configure associated scripts
+		var ballScript: TennisServeHeightBall = ball.AddComponent(TennisServeHeightBall);
+			ballScript.sceneOptions = this;
+			
 		// Get target
 		var target: GameObject = getSceneItem(TARGET_SERVICE_BOX_ID).item;
 		
@@ -651,7 +653,7 @@ class TennisServeHeightOptions extends Options {
 		if(paused){
 			return;
 		}
-		//Debug.Log('reactions 1');
+		Debug.Log('reactions 1');
 		var dt = getTimer(TIMER_DELAY_ID);
 		dt.update();
 		
@@ -660,6 +662,7 @@ class TennisServeHeightOptions extends Options {
 		
 		if(challengeStarted){
 		
+			Debug.Log('challenge started');
 			// have you won?
 			if(checkHasWon()){
 				displayPage('win');
