@@ -179,7 +179,7 @@ class TennisServeHeightOptions extends Options {
 		for(var o in objects){
 			addSceneItem(o.name, o);
 			o.GetComponent(CapsuleCollider).enabled = false;
-			//o.transform.FindChild(PLAYER_NAME_ID).active = false;
+			o.transform.FindChild(PLAYER_NAME_ID).active = false;
 			
 		}
 	}
@@ -231,8 +231,8 @@ class TennisServeHeightOptions extends Options {
 		// Create buttons.
 		var button: iGUIButton;
 		
-		button = addPageButton(this.id, 'Continue Serving');
-		button.clickCallback = backToScene_Click;
+		button = addPageNavigationButton('continue', 'Continue Serving');
+		//button.clickCallback = backToScene_Click;
 		
 		addPageNavigationButton('views', 'Views');
 		addPageNavigationButton('quit', 'Quit');
@@ -251,6 +251,9 @@ class TennisServeHeightOptions extends Options {
 				break;
 			case 'play':
 				play();
+				break;
+			case 'continue':
+				continueScene();
 				break;
 			case 'serve':
 				serve();
@@ -438,6 +441,10 @@ class TennisServeHeightOptions extends Options {
 		start();
 	}
 	
+	function continueScene(){
+		populateControlsMenu();
+	}
+	
 	/**
 	 * Populate the settings menu 
 	 * @return void
@@ -474,7 +481,7 @@ class TennisServeHeightOptions extends Options {
 
 		reset("You win");
 		
-		var text="Congratulation. You Win.\n\n";;
+		var text="Congratulations. Challenge complete.\n\n Next challenge unlocked ";;
 		addPageText(text, 0.5);
 	
 		// Create buttons.
@@ -786,7 +793,7 @@ class TennisServeHeightOptions extends Options {
 		setPaused(true);
 		
 		// Show pause menu.
-		mainPresenter.mvpToggle_Click(caller);
+		//mainPresenter.mvpToggle_Click(caller);
 		
 		populateMenu();
 	}
