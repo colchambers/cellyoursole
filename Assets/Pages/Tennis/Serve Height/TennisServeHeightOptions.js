@@ -47,6 +47,12 @@ class TennisServeHeightOptions extends Options {
 	static var CAMERA_MAIN_ID = 'Main Camera';
 	static var CAMERA_UMPIRE_ID = 'cameraUmpire';
 	static var CAMERA_SIDE_RIGHT_ID = 'cameraSideRight';
+	
+	static var PLAYER_1_ID = 'Player 1';
+	static var PLAYER_2_ID = 'Player 2';
+	static var PLAYER_3_ID = 'Player 3';
+	static var PLAYER_4_ID = 'Player 4';
+	static var PLAYER_NAME_ID = 'Player Name';
 
 	function TennisServeHeightOptions(m: Modal, v: View, p: Presenter){
 		super(m,v,p);
@@ -94,12 +100,9 @@ class TennisServeHeightOptions extends Options {
 	
 	function initialiseSceneItems(){
 		// Add all scene items to be used in the page. 
-		var objects = getPlayers();
-		for(var o in objects){
-			addSceneItem(o.name, o);
-		}
+		initialisePlayers();
 		
-		objects = getBalls();
+		var objects = getBalls();
 		for(var o in objects){
 			addSceneItem(o.name, o);
 		}
@@ -139,7 +142,7 @@ class TennisServeHeightOptions extends Options {
 		attemptsRemaining = initialBallsLeft;
 		
 		// Debug
-		attemptsRemaining = 0;
+		//attemptsRemaining = 0;
 	}
 	
 	function initialiseTimers(){
@@ -162,6 +165,23 @@ class TennisServeHeightOptions extends Options {
 		go = mainPresenter.createCamera(CAMERA_SIDE_RIGHT_ID, Vector3(-6.523982, 1.242765, 0.07972717));
 		go.transform.rotation = Quaternion.Euler(Vector3(0,90,1.08052e-07));
 		addSceneItem(go.name, go);
+	}
+	
+	/**
+	 * Initialise player objects
+	 * @return void
+	 */
+	function initialisePlayers(){
+		// For this scene players are visible but don't interact with the scene.
+		
+		//return;
+		var objects = getPlayers();
+		for(var o in objects){
+			addSceneItem(o.name, o);
+			o.GetComponent(CapsuleCollider).enabled = false;
+			//o.transform.FindChild(PLAYER_NAME_ID).active = false;
+			
+		}
 	}
 	
 	function resetTimers(){
@@ -405,6 +425,10 @@ class TennisServeHeightOptions extends Options {
 
 		// Add force
 		ball.rigidbody.AddRelativeForce(Vector3.forward * (power*1000));
+		
+		// Update attempts.
+		call('recordBallStrike');
+		
 	}
 	
 	function play(){
