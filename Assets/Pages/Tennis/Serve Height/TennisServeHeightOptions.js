@@ -31,6 +31,7 @@ class TennisServeHeightOptions extends Options {
 	var servePositionAdjustment: Vector3;
 	var currentCamera: Camera;
 	
+	static var MAIN_MENU_ID = 'mainMenu';
 	static var ELEMENTS_SWITCH_ALL_ID = 'all';
 	
 	static var TIMER_CHALLENGE_ID = 'challenge';
@@ -39,7 +40,6 @@ class TennisServeHeightOptions extends Options {
 	
 	static var TIMER_DELAY_VALUE: float = 3.0;
 	static var TIMER_CHALLENGE_VALUE: float = 30.0;
-	static var MVP_ID = 1;
 	
 	static var TARGET_SERVICE_BOX_ID = 'ServiceBoxTarget';
 	static var BALL_ID = 'Ball';
@@ -86,7 +86,7 @@ class TennisServeHeightOptions extends Options {
 		mainPresenter.mvpShow(this.id);
 		
 		//quit();
-		populateTitleMenu();
+		populateChallengeMenu();
 	}
 	
 	function initialiseToggle(){
@@ -265,9 +265,11 @@ class TennisServeHeightOptions extends Options {
 	 */
 	function loadPage(id: String){
 		switch (id) {
-			case 'titleMenu':
-				populateTitleMenu();
+			case 'challengeMenu':
+				populateChallengeMenu();
 				break;
+			case 'mainMenu':
+				loadMainMenu();
 			case 'play':
 				play();
 				break;
@@ -282,12 +284,6 @@ class TennisServeHeightOptions extends Options {
 				break;
 			case 'lose':
 				populateLose();
-				break;
-			case 'leaderboard':
-				//populateMenu();
-				break;
-			case 'credits':
-				//populateMenu();
 				break;
 			case 'optionsMenu':
 				populateMenu();
@@ -318,7 +314,7 @@ class TennisServeHeightOptions extends Options {
 	 * Populate the settings menu 
 	 * @return void
 	 */
-	function populateTitleMenu(){
+	function populateChallengeMenu(){
 		
 		title = "The Serve: Height";
 		var introText: String = "Tennis is a very dynamic game. You can't fully appreciate it with photos and pictures. ";
@@ -334,11 +330,13 @@ class TennisServeHeightOptions extends Options {
 		var button: iGUIButton;
 		
 		button = addPageButton('play', 'Play');
+		addPageNavigationButton('mainMenu', 'Challenges');
 		
-		addPageNavigationButton('leaderboard', 'Leaderboard');
-		addPageNavigationButton('credits', 'Credits');
-		addPageNavigationButton('quit', 'Quit');
-		
+	}
+	
+	function loadMainMenu(){
+		mainPresenter.mvpHide(this.id);
+		mainPresenter.mvpShow(MAIN_MENU_ID);
 	}
 	
 	/**
@@ -504,7 +502,7 @@ class TennisServeHeightOptions extends Options {
 		addPageText(text, 0.5);
 	
 		// Create buttons.
-		addPageButton('titleMenu', 'Continue');
+		addPageButton('challengeMenu', 'Continue');
 
 	}
 
@@ -520,7 +518,7 @@ class TennisServeHeightOptions extends Options {
 		addPageText(text, 0.5);
 	
 		// Create buttons.
-		addPageButton('titleMenu', 'Title Menu');
+		addPageButton('challengeMenu', 'Title Menu');
 		
 	}
 	

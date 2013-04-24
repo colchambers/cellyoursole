@@ -22,14 +22,15 @@ class ApplicationConfiguration {
 		 * Main Menu
 		 */
 		var m = new PageModal();
-		
+		/*
 		m = new PageModal();
 		m.id = 'mainMenu';
-		m.className = 'MainMenu';
+		m.className = 'MainMenuOptions';
 		m.levelName = 'Main Menu';
 		//m.addPageId('instructions', 'mainMenuInstructions');
 		m.addPageId('menu', 'mainMenu');
 		pageDetailsById.Add(m.id, m);
+		*/
 		
 		/*
 		 * Tennis Court
@@ -75,17 +76,24 @@ class ApplicationConfiguration {
 		m.addPageId('instructions', 'tennisInstructions');
 		m.addPageId('items', 'tennisItems');
 		m.addPageId('menu', 'tennisServeLesson');
+		m.addPageId('mainMenu', 'mainMenu');
 		pageDetailsById.Add(m.id, m);
 		
 		/*
 		 * Tennis Serve Height
 		 */
 		m = new PageModal();
+		m.id = 'mainMenu';
+		m.className = 'MainMenuOptions';
+		m.levelName = 'Serve Height';
+		m.addPageId('options', 'mainMenu');
+		m.addPageId('serveHeight', 'tennisServeHeightLesson');
+		m.addPageId('mainMenu', 'mainMenu');
+		pageDetailsById.Add(m.id, m);
+		
+		m = new PageModal();
 		m.id = 'tennisServeHeightLesson';
 		m.className = 'TennisServeHeightOptions';
-		m.levelName = 'Serve Height';
-		m.addPageId('options', 'tennisServeHeightLesson');
-		//m.addPageId('menu', 'tennisServeHeightLesson');
 		pageDetailsById.Add(m.id, m);
 		
 		/*

@@ -296,12 +296,14 @@ class MainPresenter extends MVP {
 		var m: iGUIWindow = mvp.panel.getContainer("menu");
 		m.setEnabled(true);
 		setCurrentMVP(mvp);
+		return mvp;
 	}
 	
 	function mvpHide(id){
 		var mvp: MVP = getMVP(id);
 		var m: iGUIWindow = mvp.panel.getContainer("menu");
 		m.setEnabled(false);
+		return mvp;
 	}
 	
 	function mvpToggle_Click(caller : iGUIButton){
