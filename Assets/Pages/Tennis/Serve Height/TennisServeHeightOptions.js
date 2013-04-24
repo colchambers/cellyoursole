@@ -26,9 +26,9 @@ class TennisServeHeightOptions extends Options {
 	var timerIntroLabel: TextMesh;
 	var timerIntroLabelHidden: boolean = false;
 	var paused: boolean = false;
-	var power: float = 0.5;
-	var targetPositionAdjustment: Vector3 = Vector3(0.5, 0.5, 0);
-	var servePositionAdjustment: Vector3 = Vector3(0, 0, 0);
+	var power: float;
+	var targetPositionAdjustment: Vector3;
+	var servePositionAdjustment: Vector3;
 	var currentCamera: Camera;
 	
 	static var ELEMENTS_SWITCH_ALL_ID = 'all';
@@ -74,6 +74,7 @@ class TennisServeHeightOptions extends Options {
 		initialiseScore();
 		initialiseTimers();
 		initialiseCameras();
+		initialiseControls();
 				
 		// Load Default Scenario
 		//loadScenario(1);
@@ -184,6 +185,10 @@ class TennisServeHeightOptions extends Options {
 		}
 	}
 	
+	function initialiseControls(){
+		resetControls();
+	}
+	
 	function resetTimers(){
 		var dt = getTimer(TIMER_DELAY_ID);
 		dt.reset();
@@ -195,6 +200,7 @@ class TennisServeHeightOptions extends Options {
 	function resetLevel(){
 		initialiseScore();
 		resetTimers();
+		resetControls();
 		
 		challengeStarted = false;
 		delayComplete = false;
@@ -206,6 +212,19 @@ class TennisServeHeightOptions extends Options {
 	
 	function recordBallStrike(){
 		attemptsRemaining--;
+	}
+	
+	/**
+	 * Reset control variables.
+	 * @return void
+	 */
+	function resetControls(){
+		power = 0.5;
+		targetPositionAdjustment = Vector3(0.5, 0.5, 0);
+		servePositionAdjustment = Vector3(0,0,0);
+		
+		// Reset view
+		setView(CAMERA_MAIN_ID);
 	}
 	
 	function getPlayers () {
@@ -485,7 +504,7 @@ class TennisServeHeightOptions extends Options {
 		addPageText(text, 0.5);
 	
 		// Create buttons.
-		addPageButton('titleMenu', 'Title Menu');
+		addPageButton('titleMenu', 'Continue');
 
 	}
 
@@ -549,7 +568,11 @@ class TennisServeHeightOptions extends Options {
 	}
 	
 	function setView_click (caller: iGUIButton) {
-		var c: Camera = getSceneItem(caller.userData).item.GetComponent(Camera);;
+		setView(caller.userData);
+	}
+	
+	function setView(id: String){
+		var c: Camera = getSceneItem(id).item.GetComponent(Camera);;
 		currentCamera.enabled = false;
 		currentCamera = c;
 		currentCamera.enabled = true;
