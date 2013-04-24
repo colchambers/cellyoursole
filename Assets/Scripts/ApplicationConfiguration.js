@@ -22,12 +22,6 @@ class ApplicationConfiguration {
 		 * Main Menu
 		 */
 		var m = new PageModal();
-		/*
-		m = new PageModal();
-		m.id = 'mainMenuInstructions';
-		m.className = 'MainMenuInstructions';
-		pageDetailsById.Add(m.id, m);
-		*/
 		
 		m = new PageModal();
 		m.id = 'mainMenu';
@@ -104,109 +98,6 @@ class ApplicationConfiguration {
 		m.addPageId('menu', 'garden');
 		pageDetailsById.Add(m.id, m);
 		
-		/*
-		 * Shadow Room
-		 */
-		m = new PageModal();
-		m.id = 'roomOptions';
-		m.className = 'RoomOptions';
-		pageDetailsById.Add(m.id, m);
-		
-		m = new PageModal();
-		m.id = 'roomItems';
-		m.className = 'RoomItems';
-		pageDetailsById.Add(m.id, m);
-		
-		m = new PageModal();
-		m.id = 'room';
-		m.className = 'RoomMenu';
-		m.levelName = 'Apartment Scene';
-		m.addPageId('options', 'roomOptions');
-		m.addPageId('menu', 'room');
-		m.addPageId('items', 'roomItems');
-		pageDetailsById.Add(m.id, m);
-		
-		/*
-		 * Cell
-		 */
-		m = new PageModal();
-		m.id = 'cellOptions';
-		m.className = 'CellOptions';
-		pageDetailsById.Add(m.id, m);
-		
-		m = new PageModal();
-		m.id = 'cellInstructions';
-		m.className = 'CellInstructions';
-		pageDetailsById.Add(m.id, m);
-		
-		m = new PageModal();
-		m.id = 'cellItems';
-		m.className = 'CellItems';
-		pageDetailsById.Add(m.id, m);
-		
-		m = new PageModal();
-		m.id = 'cell';
-		m.className = 'CellMenu';
-		m.levelName = 'Animal Cell';
-		m.addPageId('options', 'cellOptions');
-		m.addPageId('instructions', 'cellInstructions');
-		m.addPageId('items', 'cellItems');
-		m.addPageId('menu', 'cell');
-		pageDetailsById.Add(m.id, m);
-		
-		/*
-		 * Brain
-		 */
-		m = new PageModal();
-		m.id = 'brainInstructions';
-		m.className = 'BrainInstructions';
-		pageDetailsById.Add(m.id, m);
-		
-		m = new PageModal();
-		m.id = 'brain';
-		m.className = 'BrainMenu';
-		m.levelName = 'Brain';
-		m.addPageId('instructions', 'brainInstructions');
-		m.addPageId('menu', 'brain');
-		pageDetailsById.Add(m.id, m);
-		
-		/*
-		 * Lab
-		 */
-		m = new PageModal();
-		m.id = 'lab';
-		m.className = 'LabMenu';
-		m.levelName = 'Lab';
-		m.addPageId('menu', 'lab');
-		pageDetailsById.Add(m.id, m);
-		
-		/*
-		 * Reactions
-		 */
-		m = new PageModal();
-		m.id = 'reactions';
-		m.className = 'ReactionsMenu';
-		m.levelName = 'Reactions';
-		pageDetailsById.Add(m.id, m);
-
-		/*
-		 * Phonemes
-		 */
-		m = new PageModal();
-		m.id = 'phonemes';
-		m.className = 'PhonemeMenu';
-		m.levelName = 'Phonemes';
-		pageDetailsById.Add(m.id, m);
-		
-		/*
-		 * MyDay
-		 */
-		
-		m = new PageModal();
-		m.id = 'myDay';
-		m.className = 'MyDay';
-		m.levelName = 'Tasks';
-		pageDetailsById.Add(m.id, m);
 	}
 	
 	/**
