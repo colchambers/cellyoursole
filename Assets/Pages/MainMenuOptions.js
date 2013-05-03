@@ -122,6 +122,7 @@ class MainMenuOptions extends Options {
 		var button: iGUIButton;
 		
 		button = addStartChallengeButton('tennisServeHeightLesson', 'Serve height');
+		button = addStartChallengeButton('tennisServeSpinLesson', 'Serve spin');
 		
 		
 	}

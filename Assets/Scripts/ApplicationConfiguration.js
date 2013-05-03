@@ -96,6 +96,11 @@ class ApplicationConfiguration {
 		m.className = 'TennisServeHeightOptions';
 		pageDetailsById.Add(m.id, m);
 		
+		m = new PageModal();
+		m.id = 'tennisServeSpinLesson';
+		m.className = 'TennisServeSpinOptions';
+		pageDetailsById.Add(m.id, m);
+		
 		/*
 		 * Garden
 		 */
