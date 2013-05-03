@@ -131,8 +131,8 @@ class TennisServeSpinOptions extends TennisServeHeightOptions {
 		slider = addPageSlider ('power', 'power', handlePowerSlider_change, 'instructionsButton', list);
 		slider.setValue(power);
 		
-		slider = addPageSlider ('targetY', 'Aim Height', handleTargetPositionSlider_change, 'instructionsButton', list);
-		slider.setValue(targetPositionAdjustment.y);
+		slider = addPageSlider ('targetX', 'Aim direction', handleTargetPositionSlider_change, 'instructionsButton', list);
+		slider.setValue(targetPositionAdjustment.x);
 		
 		slider = addPageSlider ('serveY', 'Ball Height', handleServePositionSlider_change, 'instructionsButton', list);
 		slider.setValue(servePositionAdjustment.y);

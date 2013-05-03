@@ -7,7 +7,6 @@ class TennisServeHeightOptions extends Options {
 	var elementSwitches: Dictionary.<String, iGUISwitch>;
 	
 	var playerData: String;
-	var scenarioModal: TennisScenarioModal;
 	var serveModal: TennisServeModal;
 	var e: Errors;
 	var score: int = 0;
@@ -69,7 +68,6 @@ class TennisServeHeightOptions extends Options {
 		
 		initialiseMenu();
 		initialiseSceneItems();
-		initialiseScenarioItems();
 		initialiseTargets();
 		initialiseScore();
 		initialiseTimers();
@@ -122,15 +120,13 @@ class TennisServeHeightOptions extends Options {
 		ball.GetComponent(SphereCollider).enabled = false;
 	}
 	
-	function initialiseScenarioItems(){
-		scenarioModal = new TennisScenarioModal();
-		mainPresenter.addModal('tennisScenarios', scenarioModal);
-	}
-	
 	function initialiseTargets(){
 		// Add all scene items to be used in the page. 
 		var objects = getTargets();
 		for(var o in objects){
+			if(getSceneItem(o.name)){
+				continue;
+			}
 			addSceneItem(o.name, o);
 		}
 		
@@ -153,8 +149,12 @@ class TennisServeHeightOptions extends Options {
 		addTimer(TIMER_CHALLENGE_ID, new Timer());
 		addTimer(TIMER_DELAY_ID, new Timer());
 		var timerIntroLabelGO: GameObject = GameObject.Find(TIMER_INTRO_LABEL_ID);
-		addSceneItem(timerIntroLabelGO.name, timerIntroLabelGO);
+		if(!getSceneItem(TIMER_INTRO_LABEL_ID)){
+			addSceneItem(timerIntroLabelGO.name, timerIntroLabelGO);
+		}
 		timerIntroLabel = timerIntroLabelGO.GetComponent(TextMesh);
+		timerIntroLabel.text = '';
+		timerIntroLabelGO.GetComponent(MeshRenderer).enabled = true;
 	}
 	
 	function initialiseCameras(){
@@ -162,14 +162,24 @@ class TennisServeHeightOptions extends Options {
 		var go: GameObject;
 		go = GameObject.Find(CAMERA_MAIN_ID);
 		go.transform.position = Vector3(2.39, 4.08, 11.33);
-		addSceneItem(CAMERA_MAIN_ID, go);
-		go = mainPresenter.createCamera(CAMERA_UMPIRE_ID, Vector3(-1.561276, 0.3756608, -4.524526));
+		if(!getSceneItem(CAMERA_MAIN_ID)){
+			addSceneItem(CAMERA_MAIN_ID, go);
+		}
+		if(!getSceneItem(CAMERA_UMPIRE_ID)){
+			go = mainPresenter.createCamera(CAMERA_UMPIRE_ID, Vector3(-1.561276, 0.3756608, -4.524526));
+			addSceneItem(CAMERA_UMPIRE_ID, go);
+		}
+		else { 
+			go = getSceneItem(CAMERA_UMPIRE_ID).item;
+		}
 		go.transform.rotation = Quaternion.Euler(Vector3(0,16.83746,0));
-		addSceneItem(CAMERA_UMPIRE_ID, go);
 		
-		go = mainPresenter.createCamera(CAMERA_SIDE_RIGHT_ID, Vector3(-6.523982, 1.242765, 0.07972717));
+		if(!getSceneItem(CAMERA_UMPIRE_ID)){
+			go = mainPresenter.createCamera(CAMERA_SIDE_RIGHT_ID, Vector3(-6.523982, 1.242765, 0.07972717));
+			addSceneItem(go.name, go);
+		}
 		go.transform.rotation = Quaternion.Euler(Vector3(0,90,1.08052e-07));
-		addSceneItem(go.name, go);
+		
 	}
 	
 	/**
@@ -712,8 +722,8 @@ class TennisServeHeightOptions extends Options {
 				challengeText = "Challenge started";
 				if(!timerIntroLabelHidden){
 					// Hide intro label
-					var introLabelGO: GameObject = getSceneItem(TIMER_INTRO_LABEL_ID).item;
-					introLabelGO.active = false;
+					var introLabelGO: MeshRenderer = getSceneItem(TIMER_INTRO_LABEL_ID).item.GetComponent(MeshRenderer);
+					introLabelGO.enabled = false;
 				}
 			}
 			
