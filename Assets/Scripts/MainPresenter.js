@@ -255,11 +255,13 @@ class MainPresenter extends MVP {
 		w.variableName = menuId;
 		w.isDraggable = true;
 		var l: iGUIListBox = w.addElement('iGUIListBox');
-		var b: iGUIButton = w.addElement('iGUIButton');
+		
 		var wRect: Rect = w.getAbsoluteRect();
 		var menuWidth = wRect.width;
 		//w.style.border.top = 1;
+		/*
 		var bWidth = menuWidth*0.25;
+		var b: iGUIButton = w.addElement('iGUIButton');
 		b.setWidth(bWidth);
 		var bX = (menuWidth*0.8);
 		bX = 0;
@@ -271,6 +273,7 @@ class MainPresenter extends MVP {
 		b.label.text = 'x';
 		b.userData = pageId;
 		b.clickCallback = mvpToggle_Click;
+		*/
 		mvp.panel.addContainer("menu", w);
 		mvp.panel.addContainer("list", l);
 		mvp.panel.rootPanel = w;
