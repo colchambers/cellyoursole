@@ -30,6 +30,7 @@ class TennisServeHeightOptions extends Options {
 	var targetPositionAdjustment: Vector3;
 	var servePositionAdjustment: Vector3;
 	var currentCamera: Camera;
+	var ball: GameObject;
 	
 	static var MAIN_MENU_ID = 'mainMenu';
 	static var ELEMENTS_SWITCH_ALL_ID = 'all';
@@ -112,6 +113,13 @@ class TennisServeHeightOptions extends Options {
 		for(var o in objects){
 			addSceneItem(o.name, o);
 		}
+		
+		// Assign ball
+		ball = getSceneItem('Ball').item;
+		
+		// Stop ball moving
+		ball.GetComponent(Rigidbody).useGravity = false;
+		ball.GetComponent(SphereCollider).enabled = false;
 	}
 	
 	function initialiseScenarioItems(){
@@ -153,6 +161,7 @@ class TennisServeHeightOptions extends Options {
 		currentCamera = Camera.main;
 		var go: GameObject;
 		go = GameObject.Find(CAMERA_MAIN_ID);
+		go.transform.position = Vector3(2.39, 4.08, 11.33);
 		addSceneItem(CAMERA_MAIN_ID, go);
 		go = mainPresenter.createCamera(CAMERA_UMPIRE_ID, Vector3(-1.561276, 0.3756608, -4.524526));
 		go.transform.rotation = Quaternion.Euler(Vector3(0,16.83746,0));
@@ -174,6 +183,8 @@ class TennisServeHeightOptions extends Options {
 		var objects = getPlayers();
 		for(var o in objects){
 			addSceneItem(o.name, o);
+			// Disable all players
+			o.active = false;
 			o.GetComponent(CapsuleCollider).enabled = false;
 			o.transform.FindChild(PLAYER_NAME_ID).active = false;
 			
@@ -239,18 +250,11 @@ class TennisServeHeightOptions extends Options {
 	 * @return void
 	 */
 	function populateMenu(){
-	
 		reset("Paused");
 	
 		// Create buttons.
-		var button: iGUIButton;
-		
-		button = addPageNavigationButton('continue', 'Continue Serving');
-		//button.clickCallback = backToScene_Click;
-		
-		addPageNavigationButton('views', 'Views');
+		addPageNavigationButton('continue', 'Continue Serving');
 		addPageNavigationButton('quit', 'Quit');
-		
 	}
 	
 	/**
@@ -282,9 +286,6 @@ class TennisServeHeightOptions extends Options {
 				break;
 			case 'optionsMenu':
 				populateMenu();
-				break;
-			case 'views':
-				populateViews();
 				break;
 			case 'quit':
 				quit();
@@ -384,6 +385,8 @@ class TennisServeHeightOptions extends Options {
 		
 		slider = addPageSlider ('serveY', 'Ball Height', handleServePositionSlider_change, 'instructionsButton', list);
 		slider.setValue(servePositionAdjustment.y);
+			
+		addPageText("Select different view points from the list below.\n", 0.5);
 		
 		addPageViewButton(CAMERA_MAIN_ID, 'Default');
 		addPageViewButton(CAMERA_UMPIRE_ID, 'Umpire');
@@ -429,8 +432,7 @@ class TennisServeHeightOptions extends Options {
 		var ballPrefab: GameObject = Resources.Load(ballPrefabPath);
 		
 		// Create ball
-		var ba = servePositionAdjustment;
-		var ballPosition = Vector3(0.3637002+(ba.x*3), 2.00639+((ba.y-0.5)*3), 4.633946+ba.z);
+		var ballPosition: Vector3 = getBallPosition();
 		var ball: GameObject = GameObject.Instantiate(ballPrefab, ballPosition, Quaternion.identity);
 			ball.name += " clone";
 			ball.tag = 'ball';// Configure associated scripts
@@ -457,6 +459,11 @@ class TennisServeHeightOptions extends Options {
 		
 	}
 	
+	function getBallPosition(){
+		var ba = servePositionAdjustment;
+		return Vector3(0.3637002+(ba.x*3), 2.00639+((ba.y-0.5)*2), 4.633946+ba.z);
+	}
+	
 	function play(){
 		resetLevel();
 		setPaused(false);
@@ -466,34 +473,6 @@ class TennisServeHeightOptions extends Options {
 	
 	function continueScene(){
 		populateControlsMenu();
-	}
-	
-	/**
-	 * Populate the settings menu 
-	 * @return void
-	 */
-	function populateViews(){
-		setBackgroundEnabled(true);
-		prepareSubPage();
-		
-		var text="";
-		
-		text ="You can view this scene from many viewpoints.";
-		text+="Select different view points from the list below.\n";
-			
-		addPageText(text, 0.5);
-		
-		addPageViewButton('Main Camera', 'Default');
-		
-		addPageViewButton('Player 1 Camera', 'Player 1');
-		addPageViewButton('Player 2 Camera', 'Player 2');
-		addPageViewButton('Player 3 Camera', 'Player 3');
-		addPageViewButton('Player 4 Camera', 'Player 4');
-		addPageViewButton('Ball Camera', 'Ball');
-		
-		addPageViewButton('Walking Camera', 'First Person');
-		addPageViewButton('Walking Camera 2', 'First Person 2');
-		addPageViewButton('Top Camera', 'Top');
 	}
 	
 	/**
@@ -596,6 +575,8 @@ class TennisServeHeightOptions extends Options {
 		var title="Shoot the target!!";
 		GUI.Label(Rect(10, 40, 500, 40), title);
 		
+		// adjust racquet position for ball height.
+		ball.transform.position = getBallPosition();
 	}
 	
 	function displayErrors(){
