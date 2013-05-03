@@ -38,8 +38,8 @@ class TennisServeHeightOptions extends Options {
 	static var TIMER_DELAY_ID = 'delay';
 	static var TIMER_INTRO_LABEL_ID = 'Intro timer Text';
 	
-	static var TIMER_DELAY_VALUE: float = 3.0;
-	static var TIMER_CHALLENGE_VALUE: float = 30.0;
+	static var TIMER_DELAY_VALUE: float = 2.0;
+	static var TIMER_CHALLENGE_VALUE: float = 14.0;
 	
 	static var TARGET_SERVICE_BOX_ID = 'ServiceBoxTarget';
 	static var BALL_ID = 'Ball';
@@ -66,10 +66,9 @@ class TennisServeHeightOptions extends Options {
 		super();
 		e = new Errors();
 		
-		initialiseToggle();
+		initialiseMenu();
 		initialiseSceneItems();
 		initialiseScenarioItems();
-		initialiseHelp();
 		initialiseTargets();
 		initialiseScore();
 		initialiseTimers();
@@ -89,14 +88,20 @@ class TennisServeHeightOptions extends Options {
 		populateChallengeMenu();
 	}
 	
-	function initialiseToggle(){
+	function initialiseMenu(){
 		// Add mode button
 		var r: iGUIRoot = mainPresenter.panel.getContainer("root");
-		var button: iGUIButton = addPageButton(this.id, 'P', 'instructionsButton', r);
-		button.setX(0.13);
+		var button: iGUIButton = addPageButton(this.id, 'Pause', 'instructionsButton', r);
+		button.setX(0);
 		button.setY(0);
-		button.setWidth(0.11);
+		button.setWidth(0.21);
 		button.clickCallback = pause_Click;
+		
+		button = addPageButton(this.id, 'Instructions', 'instructionsButton', r);
+		button.setX(0.33);
+		button.setY(0);
+		button.setWidth(0.21);
+		button.clickCallback = help_Click;
 	}
 	
 	function initialiseSceneItems(){
@@ -112,16 +117,6 @@ class TennisServeHeightOptions extends Options {
 	function initialiseScenarioItems(){
 		scenarioModal = new TennisScenarioModal();
 		mainPresenter.addModal('tennisScenarios', scenarioModal);
-	}
-	
-	function initialiseHelp(){
-		// Add mode button
-		var r: iGUIRoot = mainPresenter.panel.getContainer("root");
-		var button: iGUIButton = addPageButton(MVP.MODE_EDIT, '?', 'instructionsButton', r);
-		button.setX(0.26);
-		button.setY(0);
-		button.setWidth(0.11);
-		button.clickCallback = toggleMode_Click;
 	}
 	
 	function initialiseTargets(){
@@ -315,7 +310,6 @@ class TennisServeHeightOptions extends Options {
 	 * @return void
 	 */
 	function populateChallengeMenu(){
-		
 		title = "The Serve: Height";
 		var introText: String = "Tennis is a very dynamic game. You can't fully appreciate it with photos and pictures. ";
 		introText += "You need 3d to be able to understand how things look for ";
@@ -327,11 +321,23 @@ class TennisServeHeightOptions extends Options {
 		reset(title);
 	
 		// Create buttons.
-		var button: iGUIButton;
-		
-		button = addPageButton('play', 'Play');
+		addPageButton('play', 'Play');
 		addPageNavigationButton('mainMenu', 'Challenges');
+	}
+	
+	/**
+	 * Populate the settings menu 
+	 * @return void
+	 */
+	function populateHelpMenu(){
+		reset("Instructions");
+		addPageNavigationButton('continue', 'Continue Serving');
 		
+		addPageText("This lesson is about exploring the difference ball height makes when serving");
+		var instructions="The ball is already aimed at the court. The only adjustments to make are:\n* the balls starting height\n* height to aim (trajectory)\n* power.";
+		addPageText(instructions);
+		addPageText("You have 3 serves. You only need one good serve.");
+		addPageText("Tip: Try the different views to see the serve from different angles.");
 	}
 	
 	function loadMainMenu(){
@@ -350,7 +356,7 @@ class TennisServeHeightOptions extends Options {
 		reset(title);
 		setPaused(false);
 		var menu: iGUIWindow = panel.getContainer('menu');
-		menu.setWidth(0.5);
+		menu.setWidth(0.4);
 		menu.setHeight(1);
 		menu.setX(1.0);
 		menu.setY(1.0);
@@ -580,7 +586,6 @@ class TennisServeHeightOptions extends Options {
 		return initialTargetsRemaining-targetsRemaining;
 	}
 	
-	var instruction: boolean=false;
 	function OnGUI(){
 		var hudText: String = "Targets hit: "+calculateScore()+"\nAttempts remaining: "+attemptsRemaining;
 			hudText+="\nTime left: "+challengeTimerText;
@@ -591,21 +596,6 @@ class TennisServeHeightOptions extends Options {
 		var title="Shoot the target!!";
 		GUI.Label(Rect(10, 40, 500, 40), title);
 		
-		var instructionsRect = Rect(10, 85, 130, 35);
-		if(!instruction){
-			if(GUI.Button(instructionsRect, "Instruction On")){
-				instruction=true;
-			}
-		}
-		else{
-			if(GUI.Button(instructionsRect, "Instruction Off")){
-				instruction=false;
-			}
-			
-			GUI.Box(Rect(10, 100, 300, 65), "");
-			
-			GUI.Label(Rect(15, 115, 290, 65), "tap on screen to set the aim\nhold down 2 fingers on screen to charge up a fire\nright click to simulate 2 fingers charge");
-		}
 	}
 	
 	function displayErrors(){
@@ -630,23 +620,6 @@ class TennisServeHeightOptions extends Options {
 	
 	function getView(){
 		return mainPresenter.p.getView('main');
-	}
-	
-	function toggleMode_Click(caller : iGUIButton){
-		var t: String;
-
-		setMode(caller.userData);
-		if(mode == MVP.MODE_STANDARD){
-			t = 'E';
-			caller.userData = MVP.MODE_EDIT;
-		}
-		else {
-			caller.userData = MVP.MODE_STANDARD;
-			t = 'S';
-
-		}
-
-		caller.label.text = t;
 	}
 	
 	function call(m: String){
@@ -812,11 +785,12 @@ class TennisServeHeightOptions extends Options {
 	function pause_Click(caller : iGUIButton){
 		//  Pause game.
 		setPaused(true);
-		
-		// Show pause menu.
-		//mainPresenter.mvpToggle_Click(caller);
-		
 		populateMenu();
+	}
+	
+	function help_Click(caller : iGUIButton){
+		setPaused(true);
+		populateHelpMenu();
 	}
 	
 	function setPaused(v: boolean) {
