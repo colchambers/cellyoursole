@@ -109,6 +109,9 @@ class TennisServeHeightOptions extends Options {
 		
 		var objects = getBalls();
 		for(var o in objects){
+			if(getSceneItem(o.name)){
+				continue;
+			}
 			addSceneItem(o.name, o);
 		}
 		
@@ -168,13 +171,14 @@ class TennisServeHeightOptions extends Options {
 		if(!getSceneItem(CAMERA_UMPIRE_ID)){
 			go = mainPresenter.createCamera(CAMERA_UMPIRE_ID, Vector3(-1.561276, 0.3756608, -4.524526));
 			addSceneItem(CAMERA_UMPIRE_ID, go);
+			go.transform.rotation = Quaternion.Euler(Vector3(0,16.83746,0));
 		}
 		else { 
 			go = getSceneItem(CAMERA_UMPIRE_ID).item;
 		}
 		go.transform.rotation = Quaternion.Euler(Vector3(0,16.83746,0));
 		
-		if(!getSceneItem(CAMERA_UMPIRE_ID)){
+		if(!getSceneItem(CAMERA_SIDE_RIGHT_ID)){
 			go = mainPresenter.createCamera(CAMERA_SIDE_RIGHT_ID, Vector3(-6.523982, 1.242765, 0.07972717));
 			addSceneItem(go.name, go);
 		}
