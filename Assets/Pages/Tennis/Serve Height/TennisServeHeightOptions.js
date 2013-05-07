@@ -45,7 +45,7 @@ class TennisServeHeightOptions extends Options {
 	static var BALL_ID = 'Ball';
 	
 	static var CAMERA_MAIN_ID = 'Main Camera';
-	static var CAMERA_UMPIRE_ID = 'cameraUmpire';
+	static var CAMERA_OPPONENT_ID = 'cameraUmpire';
 	static var CAMERA_SIDE_RIGHT_ID = 'cameraSideRight';
 	
 	static var PLAYER_1_ID = 'Player 1';
@@ -168,13 +168,13 @@ class TennisServeHeightOptions extends Options {
 		if(!getSceneItem(CAMERA_MAIN_ID)){
 			addSceneItem(CAMERA_MAIN_ID, go);
 		}
-		if(!getSceneItem(CAMERA_UMPIRE_ID)){
-			go = mainPresenter.createCamera(CAMERA_UMPIRE_ID, Vector3(-1.561276, 0.3756608, -4.524526));
-			addSceneItem(CAMERA_UMPIRE_ID, go);
+		if(!getSceneItem(CAMERA_OPPONENT_ID)){
+			go = mainPresenter.createCamera(CAMERA_OPPONENT_ID, Vector3(-1.561276, 0.3756608, -4.524526));
+			addSceneItem(CAMERA_OPPONENT_ID, go);
 			go.transform.rotation = Quaternion.Euler(Vector3(0,16.83746,0));
 		}
 		else { 
-			go = getSceneItem(CAMERA_UMPIRE_ID).item;
+			go = getSceneItem(CAMERA_OPPONENT_ID).item;
 		}
 		go.transform.rotation = Quaternion.Euler(Vector3(0,16.83746,0));
 		
@@ -403,7 +403,7 @@ class TennisServeHeightOptions extends Options {
 		addPageText("Select different view points from the list below.\n", 0.5);
 		
 		addPageViewButton(CAMERA_MAIN_ID, 'Default');
-		addPageViewButton(CAMERA_UMPIRE_ID, 'Umpire');
+		addPageViewButton(CAMERA_OPPONENT_ID, 'Opponent');
 		addPageViewButton(CAMERA_SIDE_RIGHT_ID, 'Side right');
 		
 	}

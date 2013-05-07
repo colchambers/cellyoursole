@@ -149,7 +149,7 @@ class TennisServeSpinOptions extends TennisServeHeightOptions {
 		addPageText("Select different view points from the list below.\n", 0.5);
 		
 		addPageViewButton(CAMERA_MAIN_ID, 'Default');
-		addPageViewButton(CAMERA_UMPIRE_ID, 'Umpire');
+		addPageViewButton(CAMERA_OPPONENT_ID, 'Opponent');
 		addPageViewButton(CAMERA_SIDE_RIGHT_ID, 'Side right');
 		
 	}
