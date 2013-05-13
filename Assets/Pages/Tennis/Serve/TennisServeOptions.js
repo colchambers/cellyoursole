@@ -381,31 +381,49 @@ class TennisServeOptions extends Options {
 		
 		button = addPageButton('serve', 'Serve');
 		
+		addControls();	
+		addViewControls();
+		
+	}
+	
+	function addControls(){
+		addControl('power');
+		addControl('targetY');
+		addControl('serveY');
+	}
+	
+	function addControl(id){
+	
 		var slider: iGUIFloatHorizontalSlider;
-		slider = addPageSlider ('power', 'power', handlePowerSlider_change, 'instructionsButton', list);
-		slider.setValue(power);
-		
-		slider = addPageSlider ('targetY', 'Aim Height', handleTargetPositionSlider_change, 'instructionsButton', list);
-		slider.setValue(targetPositionAdjustment.y);
-		
-		//slider = addPageSlider ('targetX', 'Aim direction', handleTargetPositionSlider_change, 'instructionsButton', list);
-		//slider.setValue(targetPositionAdjustment.x);
-		
-		//slider = addPageSlider ('targetZ', 'Target Depth', handleTargetPositionSlider_change, 'instructionsButton', list);
-		//slider.setValue(targetPositionAdjustment.z);
-		
-		//slider = addPageSlider ('serveX', 'Ball Horizontal Position', handleServePositionSlider_change, 'instructionsButton', list);
-		//slider.setValue(servePositionAdjustment.x);
-		
-		slider = addPageSlider ('serveY', 'Ball Height', handleServePositionSlider_change, 'instructionsButton', list);
-		slider.setValue(servePositionAdjustment.y);
-			
+		switch(id){
+			case'power':
+				slider = addPageSlider ('power', 'power', handlePowerSlider_change, 'instructionsButton', list);
+				slider.setValue(power);
+				break;
+			case 'targetY':
+				slider = addPageSlider ('targetY', 'Aim Height', handleTargetPositionSlider_change, 'instructionsButton', list);
+				slider.setValue(targetPositionAdjustment.y);
+				break;
+				//slider = addPageSlider ('targetX', 'Aim direction', handleTargetPositionSlider_change, 'instructionsButton', list);
+				//slider.setValue(targetPositionAdjustment.x);
+				
+				//slider = addPageSlider ('targetZ', 'Target Depth', handleTargetPositionSlider_change, 'instructionsButton', list);
+				//slider.setValue(targetPositionAdjustment.z);
+				
+				//slider = addPageSlider ('serveX', 'Ball Horizontal Position', handleServePositionSlider_change, 'instructionsButton', list);
+				//slider.setValue(servePositionAdjustment.x);
+			case 'serveY':
+				slider = addPageSlider ('serveY', 'Ball Height', handleServePositionSlider_change, 'instructionsButton', list);
+				slider.setValue(servePositionAdjustment.y);
+				break;
+		}
+	}
+	function addViewControls(){
 		addPageText("Select different view points from the list below.\n", 0.5);
 		
 		addPageViewButton(CAMERA_MAIN_ID, 'Default');
 		addPageViewButton(CAMERA_OPPONENT_ID, 'Opponent');
 		addPageViewButton(CAMERA_SIDE_RIGHT_ID, 'Side right');
-		
 	}
 	
 	function handlePowerSlider_change (caller: iGUIFloatHorizontalSlider) {
