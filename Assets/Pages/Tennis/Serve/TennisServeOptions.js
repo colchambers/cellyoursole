@@ -239,9 +239,9 @@ class TennisServeOptions extends Options {
 	 * @return void
 	 */
 	function resetControls(){
-		power = 0.5;
+		power = 0.2;
 		targetPositionAdjustment = Vector3(0.5, 0.5, 0);
-		servePositionAdjustment = Vector3(0,0,0);
+		servePositionAdjustment = Vector3(0,0.5,0);
 		
 		// Reset view
 		setView(CAMERA_MAIN_ID);
@@ -388,8 +388,6 @@ class TennisServeOptions extends Options {
 	
 	function addControls(){
 		addControl('power');
-		addControl('targetY');
-		addControl('serveY');
 	}
 	
 	function addControl(id){
