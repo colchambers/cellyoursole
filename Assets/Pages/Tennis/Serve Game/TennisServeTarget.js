@@ -6,7 +6,7 @@ var minY:float=-4;
 var maxY:float=4;
 
 var hitEffect: ParticleSystem;
-var sceneOptions: TennisServeOptions;
+var sceneOptions: TennisServeGameOptions;
 
 //called when hit
 function OnTriggerEnter(){

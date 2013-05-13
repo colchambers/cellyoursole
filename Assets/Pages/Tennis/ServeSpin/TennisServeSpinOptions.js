@@ -1,7 +1,7 @@
 #pragma strict
 import System.Reflection;
 
-class TennisServeSpinOptions extends TennisServeHeightOptions {
+class TennisServeSpinOptions extends TennisServeOptions {
 
 	var serveSpinAdjustment: Vector3;
 	var ball_id_index: int = 0;

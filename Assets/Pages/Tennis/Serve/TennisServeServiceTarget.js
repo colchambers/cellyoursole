@@ -1,6 +1,6 @@
 #pragma strict
 
-var sceneOptions: TennisServeHeightOptions;
+var sceneOptions: TennisServeOptions;
 
 //called when hit
 function OnTriggerEnter(){

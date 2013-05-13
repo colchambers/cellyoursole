@@ -1,6 +1,6 @@
 #pragma strict
 
-var sceneOptions: TennisServeHeightOptions;
+var sceneOptions: TennisServeOptions;
 var objectEnabled: boolean = true;
 var fudgeFactor: float = 0.1;
 

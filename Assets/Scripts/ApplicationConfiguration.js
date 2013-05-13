@@ -61,18 +61,18 @@ class ApplicationConfiguration {
 		pageDetailsById.Add(m.id, m);
 		
 		/*
-		 * Tennis Serve
+		 * Tennis Serve Game
 		 */
 		m = new PageModal();
-		m.id = 'tennisServeOptions';
-		m.className = 'TennisServeOptions';
+		m.id = 'tennisServeGameOptions';
+		m.className = 'TennisServeGameOptions';
 		pageDetailsById.Add(m.id, m);
 		
 		m = new PageModal();
-		m.id = 'tennisServeLesson';
+		m.id = 'tennisServeGame';
 		m.className = 'TennisServeMenu';
-		m.levelName = 'Serve';
-		m.addPageId('options', 'tennisServeOptions');
+		m.levelName = 'ServeGame';
+		m.addPageId('options', 'tennisServeGameOptions');
 		m.addPageId('instructions', 'tennisInstructions');
 		m.addPageId('items', 'tennisItems');
 		m.addPageId('menu', 'tennisServeLesson');
@@ -80,20 +80,20 @@ class ApplicationConfiguration {
 		pageDetailsById.Add(m.id, m);
 		
 		/*
-		 * Tennis Serve Height
+		 * Tennis Serve Challenge
 		 */
 		m = new PageModal();
 		m.id = 'mainMenu';
 		m.className = 'MainMenuOptions';
-		m.levelName = 'Serve Height';
+		m.levelName = 'Serve';
 		m.addPageId('options', 'mainMenu');
-		m.addPageId('serveHeight', 'tennisServeHeightLesson');
+		m.addPageId('serve', 'tennisServeLesson');
 		m.addPageId('mainMenu', 'mainMenu');
 		pageDetailsById.Add(m.id, m);
 		
 		m = new PageModal();
-		m.id = 'tennisServeHeightLesson';
-		m.className = 'TennisServeHeightOptions';
+		m.id = 'tennisServeLesson';
+		m.className = 'TennisServeOptions';
 		pageDetailsById.Add(m.id, m);
 		
 		m = new PageModal();

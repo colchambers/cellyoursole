@@ -7,14 +7,13 @@ class TennisServeOptions extends Options {
 	var elementSwitches: Dictionary.<String, iGUISwitch>;
 	
 	var playerData: String;
-	var scenarioModal: TennisScenarioModal;
 	var serveModal: TennisServeModal;
 	var e: Errors;
 	var score: int = 0;
 	var targetsRemaining: int;
-	var initialTargetsRemaining: int = 10;
+	var initialTargetsRemaining: int = 1;
 	var attemptsRemaining: int;
-	var initialBallsLeft = 10;
+	var initialBallsLeft = 3;
 	
 	var targetPositions: Dictionary.<int, Vector3>;
 	var challengeStarted: boolean = false;
@@ -26,16 +25,34 @@ class TennisServeOptions extends Options {
 	var timerIntroLabel: TextMesh;
 	var timerIntroLabelHidden: boolean = false;
 	var paused: boolean = false;
+	var power: float;
+	var targetPositionAdjustment: Vector3;
+	var servePositionAdjustment: Vector3;
+	var currentCamera: Camera;
+	var ball: GameObject;
 	
+	static var MAIN_MENU_ID = 'mainMenu';
 	static var ELEMENTS_SWITCH_ALL_ID = 'all';
 	
 	static var TIMER_CHALLENGE_ID = 'challenge';
 	static var TIMER_DELAY_ID = 'delay';
 	static var TIMER_INTRO_LABEL_ID = 'Intro timer Text';
 	
-	static var TIMER_DELAY_VALUE: float = 3.0;
-	static var TIMER_CHALLENGE_VALUE: float = 30.0;
-	static var MVP_ID = 1;
+	static var TIMER_DELAY_VALUE: float = 2.0;
+	static var TIMER_CHALLENGE_VALUE: float = 114.0;
+	
+	static var TARGET_SERVICE_BOX_ID = 'ServiceBoxTarget';
+	static var BALL_ID = 'Ball';
+	
+	static var CAMERA_MAIN_ID = 'Main Camera';
+	static var CAMERA_OPPONENT_ID = 'cameraUmpire';
+	static var CAMERA_SIDE_RIGHT_ID = 'cameraSideRight';
+	
+	static var PLAYER_1_ID = 'Player 1';
+	static var PLAYER_2_ID = 'Player 2';
+	static var PLAYER_3_ID = 'Player 3';
+	static var PLAYER_4_ID = 'Player 4';
+	static var PLAYER_NAME_ID = 'Player Name';
 
 	function TennisServeOptions(m: Modal, v: View, p: Presenter){
 		super(m,v,p);
@@ -49,13 +66,13 @@ class TennisServeOptions extends Options {
 		super();
 		e = new Errors();
 		
-		initialiseToggle();
+		initialiseMenu();
 		initialiseSceneItems();
-		initialiseScenarioItems();
-		initialiseHelp();
 		initialiseTargets();
 		initialiseScore();
 		initialiseTimers();
+		initialiseCameras();
+		initialiseControls();
 				
 		// Load Default Scenario
 		//loadScenario(1);
@@ -67,88 +84,59 @@ class TennisServeOptions extends Options {
 		mainPresenter.mvpShow(this.id);
 		
 		//quit();
-		populateTitleMenu();
+		populateChallengeMenu();
 	}
 	
-	function initialiseToggle(){
+	function initialiseMenu(){
 		// Add mode button
 		var r: iGUIRoot = mainPresenter.panel.getContainer("root");
-		var button: iGUIButton = addPageButton(this.id, 'P', 'instructionsButton', r);
-		button.setX(0.13);
+		var button: iGUIButton = addPageButton(this.id, 'Pause', 'instructionsButton', r);
+		button.setX(0);
 		button.setY(0);
-		button.setWidth(0.11);
+		button.setWidth(0.21);
 		button.clickCallback = pause_Click;
+		
+		button = addPageButton(this.id, 'Instructions', 'instructionsButton', r);
+		button.setX(0.33);
+		button.setY(0);
+		button.setWidth(0.21);
+		button.clickCallback = help_Click;
 	}
 	
 	function initialiseSceneItems(){
 		// Add all scene items to be used in the page. 
-		var objects = getPlayers();
+		initialisePlayers();
+		
+		var objects = getBalls();
 		for(var o in objects){
+			if(getSceneItem(o.name)){
+				continue;
+			}
 			addSceneItem(o.name, o);
 		}
 		
-		objects = getBalls();
-		for(var o in objects){
-			addSceneItem(o.name, o);
-		}
-	}
-	
-	function initialiseScenarioItems(){
-		scenarioModal = new TennisScenarioModal();
-		mainPresenter.addModal('tennisScenarios', scenarioModal);
-	}
-	
-	function initialiseHelp(){
-		// Add mode button
-		var r: iGUIRoot = mainPresenter.panel.getContainer("root");
-		var button: iGUIButton = addPageButton(MVP.MODE_EDIT, '?', 'instructionsButton', r);
-		button.setX(0.26);
-		button.setY(0);
-		button.setWidth(0.11);
-		button.clickCallback = toggleMode_Click;
+		// Assign ball
+		ball = getSceneItem('Ball').item;
+		
+		// Stop ball moving
+		ball.GetComponent(Rigidbody).useGravity = false;
+		ball.GetComponent(SphereCollider).enabled = false;
 	}
 	
 	function initialiseTargets(){
-		resetTargets();
-	}
-	
-	function resetTargets(){
 		// Add all scene items to be used in the page. 
-		/*
 		var objects = getTargets();
 		for(var o in objects){
+			if(getSceneItem(o.name)){
+				continue;
+			}
 			addSceneItem(o.name, o);
-		}*/
-		// Load target prefab
-		var targetPath = "Serve/Target";
-		var target: GameObject = Resources.Load(targetPath);
-		
-		// Create target vectors
-		targetPositions = new Dictionary.<int, Vector3>();
-		var count: int = 0;
-		targetPositions.Add(count++, Vector3(-1.632681, 0.02635913, -1.904958));
-		targetPositions.Add(count++, Vector3(-1.975818, 0.3824429, -2.229524));
-		targetPositions.Add(count++, Vector3(-0.910772, 0.03935509, -1.777087));
-		targetPositions.Add(count++, Vector3(-1.503947, 0.04959234, -0.9535093));
-		targetPositions.Add(count++, Vector3(-0.9535093, 0.5405222, -2.943056));
-		targetPositions.Add(count++, Vector3(-1.352175, 0.02112953, -2.103843));
-		targetPositions.Add(count++, Vector3(-0.3632056, 0.351516, -2.802535));
-		targetPositions.Add(count++, Vector3(-0.3409879, 0.03197211, -1.595707));
-		targetPositions.Add(count++, Vector3(-1.595707, 0.3824429, -2.906593));
-		targetPositions.Add(count++, Vector3(-0.544165, 0.02718322, -2.087848));
-		targetPositions.Add(count++, Vector3(-0.8513129, 0.03559705, -0.9050522));
-		
-		var targetClone : GameObject;
-		var script: TennisServeTarget;
-		for (var o in targetPositions) {
-			targetClone = GameObject.Instantiate(target, o.Value, Quaternion.identity);
-			targetClone.name += " "+o.Key;
-			targetClone.tag = 'Target';
-			script = targetClone.GetComponent(TennisServeTarget);
-			script.sceneOptions = this;
-			
 		}
 		
+		// Configure associated scripts
+		var serviceBoxTarget = getSceneItem('ServiceBoxTarget').item;
+		var serviceBoxTargetScript: TennisServeServiceTarget = serviceBoxTarget.GetComponent(TennisServeServiceTarget);
+			serviceBoxTargetScript.sceneOptions = this;
 	}
 	
 	function initialiseScore(){
@@ -157,15 +145,68 @@ class TennisServeOptions extends Options {
 		attemptsRemaining = initialBallsLeft;
 		
 		// Debug
-		attemptsRemaining = 0;
+		//attemptsRemaining = 0;
 	}
 	
 	function initialiseTimers(){
 		addTimer(TIMER_CHALLENGE_ID, new Timer());
 		addTimer(TIMER_DELAY_ID, new Timer());
 		var timerIntroLabelGO: GameObject = GameObject.Find(TIMER_INTRO_LABEL_ID);
-		addSceneItem(timerIntroLabelGO.name, timerIntroLabelGO);
+		if(!getSceneItem(TIMER_INTRO_LABEL_ID)){
+			addSceneItem(timerIntroLabelGO.name, timerIntroLabelGO);
+		}
 		timerIntroLabel = timerIntroLabelGO.GetComponent(TextMesh);
+		timerIntroLabel.text = '';
+		timerIntroLabelGO.GetComponent(MeshRenderer).enabled = true;
+	}
+	
+	function initialiseCameras(){
+		currentCamera = Camera.main;
+		var go: GameObject;
+		go = GameObject.Find(CAMERA_MAIN_ID);
+		go.transform.position = Vector3(2.39, 4.08, 11.33);
+		if(!getSceneItem(CAMERA_MAIN_ID)){
+			addSceneItem(CAMERA_MAIN_ID, go);
+		}
+		if(!getSceneItem(CAMERA_OPPONENT_ID)){
+			go = mainPresenter.createCamera(CAMERA_OPPONENT_ID, Vector3(-1.561276, 0.3756608, -4.524526));
+			addSceneItem(CAMERA_OPPONENT_ID, go);
+			go.transform.rotation = Quaternion.Euler(Vector3(0,16.83746,0));
+		}
+		else { 
+			go = getSceneItem(CAMERA_OPPONENT_ID).item;
+		}
+		go.transform.rotation = Quaternion.Euler(Vector3(0,16.83746,0));
+		
+		if(!getSceneItem(CAMERA_SIDE_RIGHT_ID)){
+			go = mainPresenter.createCamera(CAMERA_SIDE_RIGHT_ID, Vector3(-6.523982, 1.242765, 0.07972717));
+			addSceneItem(go.name, go);
+		}
+		go.transform.rotation = Quaternion.Euler(Vector3(0,90,1.08052e-07));
+		
+	}
+	
+	/**
+	 * Initialise player objects
+	 * @return void
+	 */
+	function initialisePlayers(){
+		// For this scene players are visible but don't interact with the scene.
+		
+		//return;
+		var objects = getPlayers();
+		for(var o in objects){
+			addSceneItem(o.name, o);
+			// Disable all players
+			o.active = false;
+			o.GetComponent(CapsuleCollider).enabled = false;
+			o.transform.FindChild(PLAYER_NAME_ID).active = false;
+			
+		}
+	}
+	
+	function initialiseControls(){
+		resetControls();
 	}
 	
 	function resetTimers(){
@@ -179,7 +220,7 @@ class TennisServeOptions extends Options {
 	function resetLevel(){
 		initialiseScore();
 		resetTimers();
-		resetTargets();
+		resetControls();
 		
 		challengeStarted = false;
 		delayComplete = false;
@@ -191,6 +232,19 @@ class TennisServeOptions extends Options {
 	
 	function recordBallStrike(){
 		attemptsRemaining--;
+	}
+	
+	/**
+	 * Reset control variables.
+	 * @return void
+	 */
+	function resetControls(){
+		power = 0.5;
+		targetPositionAdjustment = Vector3(0.5, 0.5, 0);
+		servePositionAdjustment = Vector3(0,0,0);
+		
+		// Reset view
+		setView(CAMERA_MAIN_ID);
 	}
 	
 	function getPlayers () {
@@ -210,18 +264,11 @@ class TennisServeOptions extends Options {
 	 * @return void
 	 */
 	function populateMenu(){
-	
 		reset("Paused");
 	
 		// Create buttons.
-		var button: iGUIButton;
-		
-		button = addPageButton(this.id, 'Continue Serving');
-		button.clickCallback = backToScene_Click;
-		
-		addPageNavigationButton('views', 'Views');
+		addPageNavigationButton('continue', 'Continue Serving');
 		addPageNavigationButton('quit', 'Quit');
-		
 	}
 	
 	/**
@@ -231,11 +278,19 @@ class TennisServeOptions extends Options {
 	 */
 	function loadPage(id: String){
 		switch (id) {
-			case 'titleMenu':
-				populateTitleMenu();
+			case 'challengeMenu':
+				populateChallengeMenu();
 				break;
+			case 'mainMenu':
+				loadMainMenu();
 			case 'play':
 				play();
+				break;
+			case 'continue':
+				continueScene();
+				break;
+			case 'serve':
+				serve();
 				break;
 			case 'win':
 				populateWin();
@@ -243,17 +298,8 @@ class TennisServeOptions extends Options {
 			case 'lose':
 				populateLose();
 				break;
-			case 'leaderboard':
-				//populateMenu();
-				break;
-			case 'credits':
-				//populateMenu();
-				break;
 			case 'optionsMenu':
 				populateMenu();
-				break;
-			case 'views':
-				populateViews();
 				break;
 			case 'quit':
 				quit();
@@ -278,9 +324,8 @@ class TennisServeOptions extends Options {
 	 * Populate the settings menu 
 	 * @return void
 	 */
-	function populateTitleMenu(){
-		
-		title = "The Serve";
+	function populateChallengeMenu(){
+		title = "The Serve: Height";
 		var introText: String = "Tennis is a very dynamic game. You can't fully appreciate it with photos and pictures. ";
 		introText += "You need 3d to be able to understand how things look for ";
 		introText += "you, your opponent or even the ball in any given scenario.\n\n";
@@ -291,49 +336,157 @@ class TennisServeOptions extends Options {
 		reset(title);
 	
 		// Create buttons.
-		var button: iGUIButton;
-		
-		button = addPageButton('play', 'Play');
-		
-		addPageNavigationButton('leaderboard', 'Leaderboard');
-		addPageNavigationButton('credits', 'Credits');
-		addPageNavigationButton('quit', 'Quit');
-		
-	}
-	
-	function play(){
-		resetLevel();
-		setPaused(false);
-		mainPresenter.mvpHide(this.id);
-		start();
+		addPageButton('play', 'Play');
+		addPageNavigationButton('mainMenu', 'Challenges');
 	}
 	
 	/**
 	 * Populate the settings menu 
 	 * @return void
 	 */
-	function populateViews(){
-		setBackgroundEnabled(true);
-		prepareSubPage();
+	function populateHelpMenu(){
+		reset("Instructions");
+		addPageNavigationButton('continue', 'Continue Serving');
 		
-		var text="";
+		addPageText("This lesson is about exploring the difference ball height makes when serving");
+		var instructions="The ball is already aimed at the court. The only adjustments to make are:\n* the balls starting height\n* height to aim (trajectory)\n* power.";
+		addPageText(instructions);
+		addPageText("You have 3 serves. You only need one good serve.");
+		addPageText("Tip: Try the different views to see the serve from different angles.");
+	}
+	
+	function loadMainMenu(){
+		mainPresenter.mvpHide(this.id);
+		mainPresenter.mvpShow(MAIN_MENU_ID);
+	}
+	
+	/**
+	 * Populate the settings menu 
+	 * @return void
+	 */
+	function populateControlsMenu(){
 		
-		text ="You can view this scene from many viewpoints.";
-		text+="Select different view points from the list below.\n";
+		title = "Controls";
+		
+		reset(title);
+		setPaused(false);
+		var menu: iGUIWindow = panel.getContainer('menu');
+		menu.setWidth(0.4);
+		menu.setHeight(1);
+		menu.setX(1.0);
+		menu.setY(1.0);
+	
+		// Create buttons.
+		var button: iGUIButton;
+		
+		button = addPageButton('serve', 'Serve');
+		
+		var slider: iGUIFloatHorizontalSlider;
+		slider = addPageSlider ('power', 'power', handlePowerSlider_change, 'instructionsButton', list);
+		slider.setValue(power);
+		
+		slider = addPageSlider ('targetY', 'Aim Height', handleTargetPositionSlider_change, 'instructionsButton', list);
+		slider.setValue(targetPositionAdjustment.y);
+		
+		//slider = addPageSlider ('targetX', 'Aim direction', handleTargetPositionSlider_change, 'instructionsButton', list);
+		//slider.setValue(targetPositionAdjustment.x);
+		
+		//slider = addPageSlider ('targetZ', 'Target Depth', handleTargetPositionSlider_change, 'instructionsButton', list);
+		//slider.setValue(targetPositionAdjustment.z);
+		
+		//slider = addPageSlider ('serveX', 'Ball Horizontal Position', handleServePositionSlider_change, 'instructionsButton', list);
+		//slider.setValue(servePositionAdjustment.x);
+		
+		slider = addPageSlider ('serveY', 'Ball Height', handleServePositionSlider_change, 'instructionsButton', list);
+		slider.setValue(servePositionAdjustment.y);
 			
-		addPageText(text, 0.5);
+		addPageText("Select different view points from the list below.\n", 0.5);
 		
-		addPageViewButton('Main Camera', 'Default');
+		addPageViewButton(CAMERA_MAIN_ID, 'Default');
+		addPageViewButton(CAMERA_OPPONENT_ID, 'Opponent');
+		addPageViewButton(CAMERA_SIDE_RIGHT_ID, 'Side right');
 		
-		addPageViewButton('Player 1 Camera', 'Player 1');
-		addPageViewButton('Player 2 Camera', 'Player 2');
-		addPageViewButton('Player 3 Camera', 'Player 3');
-		addPageViewButton('Player 4 Camera', 'Player 4');
-		addPageViewButton('Ball Camera', 'Ball');
+	}
+	
+	function handlePowerSlider_change (caller: iGUIFloatHorizontalSlider) {
+		power = caller.value;
+	}
+	
+	function handleTargetPositionSlider_change (caller: iGUIFloatHorizontalSlider) {
+		switch(caller.userData){
+			case "targetX":
+				targetPositionAdjustment.x = caller.value;
+				break;
+			case "targetY":
+				targetPositionAdjustment.y = caller.value;
+				break;
+			case "targetZ":
+				targetPositionAdjustment.z = caller.value;
+				break;
+		}
+	}
+	
+	function handleServePositionSlider_change (caller: iGUIFloatHorizontalSlider) {
+		switch(caller.userData){
+			case "serveX":
+				servePositionAdjustment.x = caller.value;
+				break;
+			case "serveY":
+				servePositionAdjustment.y = caller.value;
+				break;
+			case "serveZ":
+				servePositionAdjustment.z = caller.value;
+				break;
+		}
+	}
+	
+	function serve(){
+		// Load target prefab
+		var ballPrefabPath = "Serve Height/Ball";
+		var ballPrefab: GameObject = Resources.Load(ballPrefabPath);
 		
-		addPageViewButton('Walking Camera', 'First Person');
-		addPageViewButton('Walking Camera 2', 'First Person 2');
-		addPageViewButton('Top Camera', 'Top');
+		// Create ball
+		var ballPosition: Vector3 = getBallPosition();
+		var ball: GameObject = GameObject.Instantiate(ballPrefab, ballPosition, Quaternion.identity);
+			ball.name += " clone";
+			ball.tag = 'ball';// Configure associated scripts
+		var ballScript: TennisServeHeightBall = ball.AddComponent(TennisServeHeightBall);
+			ballScript.sceneOptions = this;
+			
+		// Get target
+		var target: GameObject = getSceneItem(TARGET_SERVICE_BOX_ID).item;
+		
+		// Aim at target
+		target.transform.rotation = Quaternion.EulerAngles(Vector3(0,0,0));
+		target.transform.localRotation = Quaternion.EulerAngles(Vector3(0,0,0));
+		ball.transform.LookAt(target.transform.position);
+		
+		// Adjust aim: Unsure why the opposite direction seems to work
+		ball.transform.Rotate(Vector3.left, targetPositionAdjustment.y*50);
+		ball.transform.Rotate(Vector3.up, (targetPositionAdjustment.x-0.5)*50);
+
+		// Add force
+		ball.rigidbody.AddRelativeForce(Vector3.forward * (power*1000));
+		
+		// Update attempts.
+		call('recordBallStrike');
+		
+	}
+	
+	function getBallPosition(){
+		var ba = servePositionAdjustment;
+		return Vector3(0.3637002+(ba.x*3), 2.00639+((ba.y-0.5)*2), 4.633946+ba.z);
+	}
+	
+	function play(){
+		resetLevel();
+		setPaused(false);
+		//mainPresenter.mvpHide(this.id);
+		start();
+	}
+	
+	function continueScene(){
+		populateControlsMenu();
 	}
 	
 	/**
@@ -344,11 +497,11 @@ class TennisServeOptions extends Options {
 
 		reset("You win");
 		
-		var text="Congratulation. You Win.\n\n";;
+		var text="Congratulations. Challenge complete.\n\n Next challenge unlocked ";;
 		addPageText(text, 0.5);
 	
 		// Create buttons.
-		addPageButton('titleMenu', 'Title Menu');
+		addPageButton('challengeMenu', 'Continue');
 
 	}
 
@@ -364,7 +517,7 @@ class TennisServeOptions extends Options {
 		addPageText(text, 0.5);
 	
 		// Create buttons.
-		addPageButton('titleMenu', 'Title Menu');
+		addPageButton('challengeMenu', 'Title Menu');
 		
 	}
 	
@@ -412,19 +565,20 @@ class TennisServeOptions extends Options {
 	}
 	
 	function setView_click (caller: iGUIButton) {
-		var c: Camera = GameObject.Find(caller.userData).GetComponent(Camera);;
-		var si :SceneInteraction = getScript('sceneInteraction');
-		si.currentCamera.enabled = false;
-		si.currentCamera = c;
-		si.dist = c.transform.localPosition.z;
-		si.currentCamera.enabled = true;
+		setView(caller.userData);
+	}
+	
+	function setView(id: String){
+		var c: Camera = getSceneItem(id).item.GetComponent(Camera);;
+		currentCamera.enabled = false;
+		currentCamera = c;
+		currentCamera.enabled = true;
 	}
 	
 	function calculateScore(){
 		return initialTargetsRemaining-targetsRemaining;
 	}
 	
-	var instruction: boolean=false;
 	function OnGUI(){
 		var hudText: String = "Targets hit: "+calculateScore()+"\nAttempts remaining: "+attemptsRemaining;
 			hudText+="\nTime left: "+challengeTimerText;
@@ -435,21 +589,8 @@ class TennisServeOptions extends Options {
 		var title="Shoot the target!!";
 		GUI.Label(Rect(10, 40, 500, 40), title);
 		
-		var instructionsRect = Rect(10, 85, 130, 35);
-		if(!instruction){
-			if(GUI.Button(instructionsRect, "Instruction On")){
-				instruction=true;
-			}
-		}
-		else{
-			if(GUI.Button(instructionsRect, "Instruction Off")){
-				instruction=false;
-			}
-			
-			GUI.Box(Rect(10, 100, 300, 65), "");
-			
-			GUI.Label(Rect(15, 115, 290, 65), "tap on screen to set the aim\nhold down 2 fingers on screen to charge up a fire\nright click to simulate 2 fingers charge");
-		}
+		// adjust racquet position for ball height.
+		ball.transform.position = getBallPosition();
 	}
 	
 	function displayErrors(){
@@ -476,23 +617,6 @@ class TennisServeOptions extends Options {
 		return mainPresenter.p.getView('main');
 	}
 	
-	function toggleMode_Click(caller : iGUIButton){
-		var t: String;
-
-		setMode(caller.userData);
-		if(mode == MVP.MODE_STANDARD){
-			t = 'E';
-			caller.userData = MVP.MODE_EDIT;
-		}
-		else {
-			caller.userData = MVP.MODE_STANDARD;
-			t = 'S';
-
-		}
-
-		caller.label.text = t;
-	}
-	
 	function call(m: String){
 		
 		switch(m){
@@ -517,6 +641,7 @@ class TennisServeOptions extends Options {
 	function start(){
 		challengeStarted = true;
 		delayComplete = false;
+		populateControlsMenu();
 	}
 	
 	function checkHasWon() {
@@ -527,7 +652,7 @@ class TennisServeOptions extends Options {
 			return true;
 		}
 		
-		Debug.Log('Not won');
+		//Debug.Log('Not won');
 		return false;
 	}
 	
@@ -539,7 +664,7 @@ class TennisServeOptions extends Options {
 			return true;
 		}
 		
-		Debug.Log('Not lost');
+		//Debug.Log('Not lost');
 		return false;
 	}
 	
@@ -557,6 +682,7 @@ class TennisServeOptions extends Options {
 		
 		if(challengeStarted){
 		
+			//Debug.Log('challenge started');
 			// have you won?
 			if(checkHasWon()){
 				displayPage('win');
@@ -600,8 +726,8 @@ class TennisServeOptions extends Options {
 				challengeText = "Challenge started";
 				if(!timerIntroLabelHidden){
 					// Hide intro label
-					var introLabelGO: GameObject = getSceneItem(TIMER_INTRO_LABEL_ID).item;
-					introLabelGO.active = false;
+					var introLabelGO: MeshRenderer = getSceneItem(TIMER_INTRO_LABEL_ID).item.GetComponent(MeshRenderer);
+					introLabelGO.enabled = false;
 				}
 			}
 			
@@ -654,11 +780,12 @@ class TennisServeOptions extends Options {
 	function pause_Click(caller : iGUIButton){
 		//  Pause game.
 		setPaused(true);
-		
-		// Show pause menu.
-		mainPresenter.mvpToggle_Click(caller);
-		
 		populateMenu();
+	}
+	
+	function help_Click(caller : iGUIButton){
+		setPaused(true);
+		populateHelpMenu();
 	}
 	
 	function setPaused(v: boolean) {
