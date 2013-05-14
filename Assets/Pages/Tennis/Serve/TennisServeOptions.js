@@ -28,6 +28,7 @@ class TennisServeOptions extends Options {
 	var power: float;
 	var targetPositionAdjustment: Vector3;
 	var servePositionAdjustment: Vector3;
+	var serveSpinAdjustment: Vector3;
 	var currentCamera: Camera;
 	var ball: GameObject;
 	
@@ -242,6 +243,8 @@ class TennisServeOptions extends Options {
 		power = 0.2;
 		targetPositionAdjustment = Vector3(0.5, 0.5, 0);
 		servePositionAdjustment = Vector3(0,0.5,0);
+		serveSpinAdjustment = Vector3(0,0,0);
+		
 		
 		// Reset view
 		setView(CAMERA_MAIN_ID);
@@ -402,8 +405,10 @@ class TennisServeOptions extends Options {
 				slider = addPageSlider ('targetY', 'Aim Height', handleTargetPositionSlider_change, 'instructionsButton', list);
 				slider.setValue(targetPositionAdjustment.y);
 				break;
-				//slider = addPageSlider ('targetX', 'Aim direction', handleTargetPositionSlider_change, 'instructionsButton', list);
-				//slider.setValue(targetPositionAdjustment.x);
+			case 'targetX':
+				slider = addPageSlider ('targetX', 'Aim direction', handleTargetPositionSlider_change, 'instructionsButton', list);
+				slider.setValue(targetPositionAdjustment.x);
+				break;
 				
 				//slider = addPageSlider ('targetZ', 'Target Depth', handleTargetPositionSlider_change, 'instructionsButton', list);
 				//slider.setValue(targetPositionAdjustment.z);
@@ -414,8 +419,21 @@ class TennisServeOptions extends Options {
 				slider = addPageSlider ('serveY', 'Ball Height', handleServePositionSlider_change, 'instructionsButton', list);
 				slider.setValue(servePositionAdjustment.y);
 				break;
+			case 'side':
+				slider = addPageSlider ('side', 'Slice', handleServeSpinSlider_change, 'instructionsButton', list);
+				slider.setValue(servePositionAdjustment.y);
+				break;
+			case 'top':
+				slider = addPageSlider ('top', 'Top', handleServeSpinSlider_change, 'instructionsButton', list);
+				slider.setValue(servePositionAdjustment.y);
+				break;
+			case 'up':
+				slider = addPageSlider ('up', 'Up', handleServeSpinSlider_change, 'instructionsButton', list);
+				slider.setValue(servePositionAdjustment.y);
+				break;
 		}
 	}
+
 	function addViewControls(){
 		addPageText("Select different view points from the list below.\n", 0.5);
 		
@@ -452,6 +470,20 @@ class TennisServeOptions extends Options {
 				break;
 			case "serveZ":
 				servePositionAdjustment.z = caller.value;
+				break;
+		}
+	}
+	
+	function handleServeSpinSlider_change (caller: iGUIFloatHorizontalSlider) {
+		switch(caller.userData){
+			case "top":
+				serveSpinAdjustment.x = 0-caller.value;
+				break;
+			case "up":
+				serveSpinAdjustment.y = caller.value;
+				break;
+			case "side":
+				serveSpinAdjustment.z = -1+caller.value;
 				break;
 		}
 	}

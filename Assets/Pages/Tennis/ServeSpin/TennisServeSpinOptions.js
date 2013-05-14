@@ -3,7 +3,6 @@ import System.Reflection;
 
 class TennisServeSpinOptions extends TennisServeOptions {
 
-	var serveSpinAdjustment: Vector3;
 	var ball_id_index: int = 0;
 	var servedBall: GameObject;
 	
@@ -19,18 +18,6 @@ class TennisServeSpinOptions extends TennisServeOptions {
 		super();
 		
 		initialBallsLeft = 30;
-	}
-	/**
-	 * Reset control variables.
-	 * @return void
-	 */
-	function resetControls(){
-		power = 0.5;
-		targetPositionAdjustment = Vector3(0.5, 0.5, 0);
-		servePositionAdjustment = Vector3(0,0,0);
-		
-		// Reset view
-		setView(CAMERA_MAIN_ID);
 	}
 	
 	/**
@@ -110,6 +97,7 @@ class TennisServeSpinOptions extends TennisServeOptions {
 	 * Populate the settings menu 
 	 * @return void
 	 */
+	 /*
 	function populateControlsMenu(){
 		
 		title = "Controls";
@@ -152,20 +140,11 @@ class TennisServeSpinOptions extends TennisServeOptions {
 		addPageViewButton(CAMERA_OPPONENT_ID, 'Opponent');
 		addPageViewButton(CAMERA_SIDE_RIGHT_ID, 'Side right');
 		
-	}
+	}*/
 	
-	function handleServeSpinSlider_change (caller: iGUIFloatHorizontalSlider) {
-		switch(caller.userData){
-			case "top":
-				serveSpinAdjustment.x = 0-caller.value;
-				break;
-			case "up":
-				serveSpinAdjustment.y = caller.value;
-				break;
-			case "side":
-				serveSpinAdjustment.z = -1+caller.value;
-				break;
-		}
+	function addControls(){
+		addControl('power');
+		addControl('side');
 	}
 	
 	function serve(){
