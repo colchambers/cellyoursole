@@ -37,6 +37,8 @@ class TennisServeOptions extends Options {
 	
 	var challengeMenuTitle: String;
 	var challengeMenuText: String;
+	var helpMenuTitle: String;
+	var helpMenuText: String;
 	
 	static var MAIN_MENU_ID = 'mainMenu';
 	static var ELEMENTS_SWITCH_ALL_ID = 'all';
@@ -103,6 +105,13 @@ class TennisServeOptions extends Options {
 		challengeMenuTitle = "The Serve: Flat";
 		challengeMenuText = "The basic tennis serve is a flat serve. \n\n";
 		challengeMenuText += "This lesson will teach you how to serve the ball at a target in the service box ";
+		
+		helpMenuTitle = challengeMenuTitle+": Instructions";
+		helpMenuText = "This lesson is about learning the flat serve.\n\n";
+		helpMenuText +="The ball is already aimed at the target in the service box. The only adjustment to make is:\n";
+		helpMenuText +="* the power to serve with.\n\n";
+		helpMenuText +="You have 3 serves. You only need one good serve. \n\n";
+		helpMenuText +="Tip: Try the different views to see the serve from different angles.";
 	}
 	
 	function initialiseMenu(){
@@ -381,14 +390,9 @@ class TennisServeOptions extends Options {
 	 * @return void
 	 */
 	function populateHelpMenu(){
-		reset("Instructions");
+		reset(helpMenuTitle);
 		addPageNavigationButton('continue', 'Continue Serving');
-		
-		addPageText("This lesson is about exploring the difference ball height makes when serving");
-		var instructions="The ball is already aimed at the court. The only adjustments to make are:\n* the balls starting height\n* height to aim (trajectory)\n* power.";
-		addPageText(instructions);
-		addPageText("You have 3 serves. You only need one good serve.");
-		addPageText("Tip: Try the different views to see the serve from different angles.");
+		addPageText(helpMenuText);
 	}
 	
 	function loadMainMenu(){
