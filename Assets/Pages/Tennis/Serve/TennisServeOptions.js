@@ -54,6 +54,8 @@ class TennisServeOptions extends Options {
 	static var PLAYER_3_ID = 'Player 3';
 	static var PLAYER_4_ID = 'Player 4';
 	static var PLAYER_NAME_ID = 'Player Name';
+	
+	static var SCRIPTS_ID = 'Scripts';
 
 	function TennisServeOptions(m: Modal, v: View, p: Presenter){
 		super(m,v,p);
@@ -69,6 +71,7 @@ class TennisServeOptions extends Options {
 		
 		initialiseMenu();
 		initialiseSceneItems();
+		initialiseScripts();
 		initialiseTargets();
 		initialiseScore();
 		initialiseTimers();
@@ -80,6 +83,7 @@ class TennisServeOptions extends Options {
 		//call('recordBallStrike');
 		initialiseDisplay();
 	}
+	
 	
 	function initialiseDisplay(){
 		mainPresenter.mvpShow(this.id);
@@ -124,6 +128,23 @@ class TennisServeOptions extends Options {
 		ball.GetComponent(SphereCollider).enabled = false;
 	}
 	
+	function initialiseScripts(){
+		// Add GO to scene items
+		var scripts: GameObject = GameObject.Find(SCRIPTS_ID);
+		if(!scripts){
+			// We may have a big problem. Add code to deal with this later.
+			return;
+		}
+		if(!getSceneItem(SCRIPTS_ID)){
+			addSceneItem(SCRIPTS_ID, scripts);
+		}
+		// Configure associated scripts
+		var script: TennisServe = scripts.GetComponent(TennisServe);
+		if(!script){
+			script = scripts.AddComponent(TennisServe);
+		}
+	}
+	
 	function initialiseTargets(){
 		// Add all scene items to be used in the page. 
 		var objects = getTargets();
@@ -137,7 +158,10 @@ class TennisServeOptions extends Options {
 		// Configure associated scripts
 		var serviceBoxTarget = getSceneItem('ServiceBoxTarget').item;
 		var serviceBoxTargetScript: TennisServeServiceTarget = serviceBoxTarget.GetComponent(TennisServeServiceTarget);
-			serviceBoxTargetScript.sceneOptions = this;
+		if(!serviceBoxTargetScript){
+			serviceBoxTargetScript = serviceBoxTarget.AddComponent(TennisServeServiceTarget);
+		}
+		serviceBoxTargetScript.sceneOptions = this;
 	}
 	
 	function initialiseScore(){
