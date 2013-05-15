@@ -106,6 +106,11 @@ class ApplicationConfiguration {
 		m.className = 'TennisServeSliceOptions';
 		pageDetailsById.Add(m.id, m);
 		
+		m = new PageModal();
+		m.id = 'tennisServeHeightLesson';
+		m.className = 'TennisServeHeightOptions';
+		pageDetailsById.Add(m.id, m);
+		
 		/*
 		 * Garden
 		 */

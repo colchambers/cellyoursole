@@ -102,7 +102,14 @@ class MainMenuOptions extends Options {
 		button = addStartChallengeButton('tennisServeTopSpinLesson', 'Topspin');
 		button = addStartChallengeButton('tennisServeSliceLesson', 'Slice');
 		
+		var advancedText: String = "Advanced Challenges\n\n ";
+		advancedText += "The following challenges introduce more advanced aspects of the serve.";
+
+		if(advancedText){
+			addPageText(advancedText);
+		}
 		
+		button = addStartChallengeButton('tennisServeHeightLesson', 'Height');
 	}
 	
 	/**
