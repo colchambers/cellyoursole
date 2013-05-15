@@ -114,6 +114,9 @@ class MainMenuOptions extends Options {
 		var introText: String = "Tennis is a very dynamic game. You can't fully appreciate it with photos and pictures. ";
 		introText += "You need 3d to be able to understand how things look for ";
 		introText += "you, your opponent or even the ball in any given scenario.\n\n";
+		
+		introText += "This series of challenges introduces you to the most fundamental shot in Tennis.  The serve. ";
+		introText += "Every point starts with a serve. A good serve helps you start the point on your terms.\n\n";
 		if(introText){
 			addPageText(introText);
 		}
@@ -121,8 +124,9 @@ class MainMenuOptions extends Options {
 		// Create buttons.
 		var button: iGUIButton;
 		
-		button = addStartChallengeButton('tennisServeLesson', 'Serve height');
-		button = addStartChallengeButton('tennisServeSpinLesson', 'Serve spin');
+		button = addStartChallengeButton('tennisServeLesson', 'Flat');
+		button = addStartChallengeButton('tennisServeTopSpinLesson', 'Topspin');
+		button = addStartChallengeButton('tennisServeSliceLesson', 'Slice');
 		
 		
 	}
@@ -135,7 +139,7 @@ class MainMenuOptions extends Options {
 	function reset(){
 		setPaused(true);
 		super();
-		setDefaultMenuSize("Compete");
+		setDefaultMenuSize("Tennis Fundamentals: The Serve");
 	}
 	
 	function setDefaultMenuSize(title: String){

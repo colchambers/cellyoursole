@@ -97,8 +97,13 @@ class ApplicationConfiguration {
 		pageDetailsById.Add(m.id, m);
 		
 		m = new PageModal();
-		m.id = 'tennisServeSpinLesson';
+		m.id = 'tennisServeTopSpinLesson';
 		m.className = 'TennisServeSpinOptions';
+		pageDetailsById.Add(m.id, m);
+		
+		m = new PageModal();
+		m.id = 'tennisServeSliceLesson';
+		m.className = 'TennisServeSliceOptions';
 		pageDetailsById.Add(m.id, m);
 		
 		/*
