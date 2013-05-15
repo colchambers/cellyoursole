@@ -40,6 +40,9 @@ class TennisServeOptions extends Options {
 	var helpMenuTitle: String;
 	var helpMenuText: String;
 	
+	var targetServeBoxPosition: Vector3 = Vector3(0.8057368,0,1.237582);
+	var targetServeBoxScale: Vector3 = Vector3(0.5,0.001,0.75);
+	
 	static var MAIN_MENU_ID = 'mainMenu';
 	static var ELEMENTS_SWITCH_ALL_ID = 'all';
 	
@@ -51,6 +54,7 @@ class TennisServeOptions extends Options {
 	static var TIMER_CHALLENGE_VALUE: float = 114.0;
 	
 	static var TARGET_SERVICE_BOX_ID = 'ServiceBoxTarget';
+	static var TARGET_SERVE_ID = 'ServeTarget';
 	static var BALL_ID = 'Ball';
 	
 	static var CAMERA_MAIN_ID = 'Main Camera';
@@ -179,11 +183,27 @@ class TennisServeOptions extends Options {
 		
 		// Configure associated scripts
 		var serviceBoxTarget = getSceneItem('ServiceBoxTarget').item;
+		
+		// Clone for targetting later.
+		if(!getSceneItem(TARGET_SERVE_ID)){
+			var serveTarget: GameObject = GameObject.Instantiate(serviceBoxTarget, 
+					serviceBoxTarget.transform.position, serviceBoxTarget.transform.rotation);
+			serveTarget.name = TARGET_SERVE_ID;
+			serveTarget.RemoveComponent(MeshRenderer);
+			serveTarget.RemoveComponent(BoxCollider);
+			addSceneItem(TARGET_SERVE_ID, serveTarget);
+		}
 		var serviceBoxTargetScript: TennisServeServiceTarget = serviceBoxTarget.GetComponent(TennisServeServiceTarget);
 		if(!serviceBoxTargetScript){
 			serviceBoxTargetScript = serviceBoxTarget.AddComponent(TennisServeServiceTarget);
 		}
 		serviceBoxTargetScript.sceneOptions = this;
+	}
+	
+	function resetTargets(){
+		var serviceBoxTarget = getSceneItem('ServiceBoxTarget').item;
+		serviceBoxTarget.transform.localPosition = targetServeBoxPosition;
+		serviceBoxTarget.transform.localScale = targetServeBoxScale;
 	}
 	
 	function initialiseScore(){
@@ -266,6 +286,7 @@ class TennisServeOptions extends Options {
 	
 	function resetLevel(){
 		initialiseScore();
+		resetTargets();
 		resetTimers();
 		resetControls();
 		
@@ -541,7 +562,7 @@ class TennisServeOptions extends Options {
 		servedBall = ball;
 			
 		// Get target
-		var target: GameObject = getSceneItem(TARGET_SERVICE_BOX_ID).item;
+		var target: GameObject = getSceneItem(TARGET_SERVE_ID).item;
 		
 		// Aim at target
 		target.transform.rotation = Quaternion.EulerAngles(Vector3(0,0,0));
