@@ -11,30 +11,11 @@ class TennisServeSliceOptions extends TennisServeOptions {
 		hasBackground = true;
 	}
 	
-	function init(){
-		super();
-		
-		initialBallsLeft = 30;
-	}
-
-	/**
-	 * Populate the settings menu 
-	 * @return void
-	 */
-	function populateChallengeMenu(){
-		title = "The Serve: Slice";
-		var introText: String = "The tennis serve becomes a real when when combined with spin";
-		introText += "This lesson will teach you how to apply slice (Side) spin during a serve to make ";
-		introText += "the ball curve sieways during flight";
-		if(introText){
-			addPageText(introText);
-		}
-		
-		reset(title);
-	
-		// Create buttons.
-		addPageButton('play', 'Play');
-		addPageNavigationButton('mainMenu', 'Challenges');
+	function initialiseText(){
+		challengeMenuTitle = "The Serve: Slice";
+		challengeMenuText = "The tennis serve becomes a real weapon when combined with spin";
+		challengeMenuText += "This lesson will teach you how to apply slice (Side) spin during a serve to make ";
+		challengeMenuText += "the ball curve sideways during flight";
 	}
 	
 	/**

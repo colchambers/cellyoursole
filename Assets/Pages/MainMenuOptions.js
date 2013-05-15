@@ -79,32 +79,6 @@ class MainMenuOptions extends Options {
 	}
 	
 	/**
-	 * Display the current mvp then load the given page.
-	 * @param String id id of the page to load
-	 * @return void
-	 */
-	function displayPage(id: String){
-		mainPresenter.mvpShow(this.id);
-		loadPage(id);
-	}
-	
-	function addStartChallengeButton(id: String, t: String){
-		var button: iGUIButton = addPageButton(id, t, 'none');
-		button.clickCallback = startChallenge_Click;
-		return button;
-	}
-	
-	function startChallenge_Click(caller : iGUIButton){
-		displayChallenge(caller.userData);
-	}
-	
-	function displayChallenge(id: String){
-		mainPresenter.mvpHide(this.id);
-		var mvp = mainPresenter.mvpShow(id);
-		mvp.loadPage('challengeMenu');
-	}
-
-	/**
 	 * Populate the settings menu 
 	 * @return void
 	 */
@@ -131,6 +105,32 @@ class MainMenuOptions extends Options {
 		
 	}
 	
+	/**
+	 * Display the current mvp then load the given page.
+	 * @param String id id of the page to load
+	 * @return void
+	 */
+	function displayPage(id: String){
+		mainPresenter.mvpShow(this.id);
+		loadPage(id);
+	}
+	
+	function addStartChallengeButton(id: String, t: String){
+		var button: iGUIButton = addPageButton(id, t, 'none');
+		button.clickCallback = startChallenge_Click;
+		return button;
+	}
+	
+	function startChallenge_Click(caller : iGUIButton){
+		displayChallenge(caller.userData);
+	}
+	
+	function displayChallenge(id: String){
+		mainPresenter.mvpHide(this.id);
+		var mvp = mainPresenter.mvpShow(id);
+		mvp.loadPage('challengeMenu');
+	}
+
 	function reset(title: String){
 		reset();
 		setDefaultMenuSize(title);

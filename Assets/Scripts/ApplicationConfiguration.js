@@ -98,7 +98,7 @@ class ApplicationConfiguration {
 		
 		m = new PageModal();
 		m.id = 'tennisServeTopSpinLesson';
-		m.className = 'TennisServeSpinOptions';
+		m.className = 'TennisServeTopSpinOptions';
 		pageDetailsById.Add(m.id, m);
 		
 		m = new PageModal();

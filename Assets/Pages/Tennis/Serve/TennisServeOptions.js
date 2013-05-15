@@ -35,6 +35,9 @@ class TennisServeOptions extends Options {
 	var ball_id_index: int = 0;
 	var servedBall: GameObject;
 	
+	var challengeMenuTitle: String;
+	var challengeMenuText: String;
+	
 	static var MAIN_MENU_ID = 'mainMenu';
 	static var ELEMENTS_SWITCH_ALL_ID = 'all';
 	
@@ -72,6 +75,7 @@ class TennisServeOptions extends Options {
 		super();
 		e = new Errors();
 		
+		initialiseText();
 		initialiseMenu();
 		initialiseSceneItems();
 		initialiseScripts();
@@ -93,6 +97,12 @@ class TennisServeOptions extends Options {
 		
 		//quit();
 		populateChallengeMenu();
+	}
+	
+	function initialiseText(){
+		challengeMenuTitle = "The Serve: Flat";
+		challengeMenuText = "The basic tennis serve is a flat serve. \n\n";
+		challengeMenuText += "This lesson will teach you how to serve the ball at a target in the service box ";
 	}
 	
 	function initialiseMenu(){
@@ -354,15 +364,12 @@ class TennisServeOptions extends Options {
 	 * @return void
 	 */
 	function populateChallengeMenu(){
-		title = "The Serve: Height";
-		var introText: String = "Tennis is a very dynamic game. You can't fully appreciate it with photos and pictures. ";
-		introText += "You need 3d to be able to understand how things look for ";
-		introText += "you, your opponent or even the ball in any given scenario.\n\n";
+		reset(challengeMenuTitle);
+		
+		var introText = challengeMenuText;
 		if(introText){
 			addPageText(introText);
 		}
-		
-		reset(title);
 	
 		// Create buttons.
 		addPageButton('play', 'Play');
@@ -545,9 +552,9 @@ class TennisServeOptions extends Options {
 		ball.rigidbody.AddRelativeForce(Vector3.forward * (power*1000));
 		
 		// Add Torgue (Spin)
-		ball.rigidbody.AddTorque(Vector3.left * ((0.5-serveSpinAdjustment.x)*10));
+		ball.rigidbody.AddTorque(Vector3.left * (((0-serveSpinAdjustment.x/2))*10));
 		ball.rigidbody.AddTorque(Vector3.forward * (serveSpinAdjustment.y*10));
-		ball.rigidbody.AddTorque(Vector3.up * ((0.5-serveSpinAdjustment.z)*10));
+		ball.rigidbody.AddTorque(Vector3.up * (((0-serveSpinAdjustment.z/2))*10));
 		
 		Debug.Log('serveSpinAdjustment = '+serveSpinAdjustment);
 		// Update attempts.
