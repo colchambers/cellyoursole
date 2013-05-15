@@ -113,4 +113,8 @@ class ModalPanel {
 		return sceneItems;
 	
 	}
+	
+	function removeSceneItem(fn:String){
+		sceneItems.Remove(fn);
+	}
 }

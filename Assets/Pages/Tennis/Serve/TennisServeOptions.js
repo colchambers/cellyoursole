@@ -289,9 +289,23 @@ class TennisServeOptions extends Options {
 		resetTargets();
 		resetTimers();
 		resetControls();
+		resetBalls();
 		
 		challengeStarted = false;
 		delayComplete = false;
+	}
+	
+	function resetBalls(){
+		var objects = getBalls();
+		for(var o in objects){
+			if(o.name == BALL_ID){
+				continue;
+			}
+			if(getSceneItem(o.name)){
+				removeSceneItem(o.name);
+			}
+			GameObject.Destroy(o);
+		}
 	}
 	
 	function recordHit(){

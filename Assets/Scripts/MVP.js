@@ -481,6 +481,10 @@ class MVP {
 	
 	}
 	
+	function removeSceneItem(id:String){
+		panel.removeSceneItem(id);
+	}
+	
 	function getDraggables(){
 		return new GameObject[0];
 	}
