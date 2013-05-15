@@ -32,6 +32,9 @@ class TennisServeOptions extends Options {
 	var currentCamera: Camera;
 	var ball: GameObject;
 	
+	var ball_id_index: int = 0;
+	var servedBall: GameObject;
+	
 	static var MAIN_MENU_ID = 'mainMenu';
 	static var ELEMENTS_SWITCH_ALL_ID = 'all';
 	
@@ -269,7 +272,6 @@ class TennisServeOptions extends Options {
 		servePositionAdjustment = Vector3(0,0.5,0);
 		serveSpinAdjustment = Vector3(0,0,0);
 		
-		
 		// Reset view
 		setView(CAMERA_MAIN_ID);
 	}
@@ -443,17 +445,17 @@ class TennisServeOptions extends Options {
 				slider = addPageSlider ('serveY', 'Ball Height', handleServePositionSlider_change, 'instructionsButton', list);
 				slider.setValue(servePositionAdjustment.y);
 				break;
-			case 'side':
-				slider = addPageSlider ('side', 'Slice', handleServeSpinSlider_change, 'instructionsButton', list);
-				slider.setValue(servePositionAdjustment.y);
-				break;
 			case 'top':
 				slider = addPageSlider ('top', 'Top', handleServeSpinSlider_change, 'instructionsButton', list);
-				slider.setValue(servePositionAdjustment.y);
+				slider.setValue(serveSpinAdjustment.x);
 				break;
 			case 'up':
 				slider = addPageSlider ('up', 'Up', handleServeSpinSlider_change, 'instructionsButton', list);
-				slider.setValue(servePositionAdjustment.y);
+				slider.setValue(serveSpinAdjustment.y);
+				break;
+			case 'side':
+				slider = addPageSlider ('side', 'Slice', handleServeSpinSlider_change, 'instructionsButton', list);
+				slider.setValue(serveSpinAdjustment.z);
 				break;
 		}
 	}
@@ -501,13 +503,13 @@ class TennisServeOptions extends Options {
 	function handleServeSpinSlider_change (caller: iGUIFloatHorizontalSlider) {
 		switch(caller.userData){
 			case "top":
-				serveSpinAdjustment.x = 0-caller.value;
+				serveSpinAdjustment.x = caller.value;
 				break;
 			case "up":
 				serveSpinAdjustment.y = caller.value;
 				break;
 			case "side":
-				serveSpinAdjustment.z = -1+caller.value;
+				serveSpinAdjustment.z = caller.value;
 				break;
 		}
 	}
@@ -520,10 +522,12 @@ class TennisServeOptions extends Options {
 		// Create ball
 		var ballPosition: Vector3 = getBallPosition();
 		var ball: GameObject = GameObject.Instantiate(ballPrefab, ballPosition, Quaternion.identity);
-			ball.name += " clone";
+			ball.name += " clone" + (ball_id_index++);
 			ball.tag = 'ball';// Configure associated scripts
-		var ballScript: TennisServeHeightBall = ball.AddComponent(TennisServeHeightBall);
+		var ballScript: TennisServeSpinBall = ball.AddComponent(TennisServeSpinBall);
 			ballScript.sceneOptions = this;
+			
+		servedBall = ball;
 			
 		// Get target
 		var target: GameObject = getSceneItem(TARGET_SERVICE_BOX_ID).item;
@@ -540,6 +544,12 @@ class TennisServeOptions extends Options {
 		// Add force
 		ball.rigidbody.AddRelativeForce(Vector3.forward * (power*1000));
 		
+		// Add Torgue (Spin)
+		ball.rigidbody.AddTorque(Vector3.left * ((0.5-serveSpinAdjustment.x)*10));
+		ball.rigidbody.AddTorque(Vector3.forward * (serveSpinAdjustment.y*10));
+		ball.rigidbody.AddTorque(Vector3.up * ((0.5-serveSpinAdjustment.z)*10));
+		
+		Debug.Log('serveSpinAdjustment = '+serveSpinAdjustment);
 		// Update attempts.
 		call('recordBallStrike');
 		
