@@ -51,7 +51,7 @@ class TennisServeOptions extends Options {
 	static var TIMER_INTRO_LABEL_ID = 'Intro timer Text';
 	
 	static var TIMER_DELAY_VALUE: float = 2.0;
-	static var TIMER_CHALLENGE_VALUE: float = 114.0;
+	static var TIMER_CHALLENGE_VALUE: float = 14.0;
 	
 	static var TARGET_SERVICE_BOX_ID = 'ServiceBoxTarget';
 	static var TARGET_SERVE_ID = 'ServeTarget';
