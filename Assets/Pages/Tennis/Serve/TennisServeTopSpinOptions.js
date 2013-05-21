@@ -36,6 +36,7 @@ class TennisServeTopSpinOptions extends TennisServeOptions {
 	function resetControls(){
 		super();
 		power = 0.6;
+		setView(CAMERA_SIDE_RIGHT_ID);
 	}
 	
 	function addControls(){
