@@ -170,7 +170,9 @@ class TennisServeOptions extends Options {
 			script = scripts.AddComponent(TennisServe);
 		}
 		
-		script.turret = getSceneItem(PLAYER_1_ID).item.transform;
+		if(!script.turret){
+			script.turret = getSceneItem(PLAYER_1_ID).item.transform;
+		}
 	}
 	
 	function initialiseTargets(){
